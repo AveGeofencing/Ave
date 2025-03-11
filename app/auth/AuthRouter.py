@@ -40,6 +40,7 @@ async def login(
         key="session_token",
         value=session_token,
         httponly=True,
+        domain=".onrender.com",
         secure=True,  # Set to True for HTTPS
         samesite="Lax",
         max_age=SESSION_TIMEOUT_MINUTES * 60,
