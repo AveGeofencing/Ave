@@ -42,7 +42,7 @@ async def login(
         httponly=True,
         domain=".onrender.com",
         secure=True,  # Set to True for HTTPS
-        samesite="Lax",
+        samesite="None",
         max_age=SESSION_TIMEOUT_MINUTES * 60,
     )
 
