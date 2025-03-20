@@ -22,6 +22,16 @@ async def create_new_user(
 
     return created_message
 
+@GeneralUserRouter.post("/send_verification_code")
+async def verify_user_email_after_reg(
+    session: DBSessionDep,
+    user_email: str,
+    matric: str,
+    background_tasks: BackgroundTasks,
+):
+    userService = UserService(session)
+    user_verified = await userService.create_and_send_registration_code(email=user_email, matric=matric, backgroundTask=background_tasks)
+    return user_verified
 
 @GeneralUserRouter.post("/forgot_password")
 async def forgot_password(

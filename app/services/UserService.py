@@ -1,8 +1,10 @@
 import logging
+import random
 from typing import Optional, Dict, Any, Union
 from zoneinfo import ZoneInfo
 from datetime import timedelta, datetime
 
+import redis
 from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi import BackgroundTasks, HTTPException
 from passlib.context import CryptContext
@@ -10,6 +12,7 @@ from pydantic import EmailStr
 from jose import JWTError, jwt
 
 from .EmailService import send_email
+from ..exceptions import *
 from ..repositories import (
     PasswordResetTokenRepository,
     SessionRepository,
@@ -28,30 +31,6 @@ bcrypt_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 logger = logging.getLogger("uvicorn")
 
 
-# Custom exception classes
-class UserServiceError(Exception):
-    """Base exception for UserService errors"""
-
-    pass
-
-
-class UserAlreadyExistsError(UserServiceError):
-    """Raised when attempting to create a user that already exists"""
-
-    pass
-
-
-class UserNotFoundError(UserServiceError):
-    """Raised when a user is not found"""
-
-    pass
-
-
-class TokenError(UserServiceError):
-    """Raised when there is an issue with a token"""
-
-    pass
-
 
 
 class UserService:
@@ -68,6 +47,10 @@ class UserService:
             password_reset_token_repository or PasswordResetTokenRepository(session)
         )
         self.session_repository = session_repository or SessionRepository(session)
+        self.redis_client = redis.Redis.from_url(
+            url= settings.REDIS_URL,
+            decode_responses=True,
+        )
 
     async def create_new_user(self, user_data: UserCreateModel) -> Dict[str, str]:
         """Create a new user account"""
@@ -87,12 +70,13 @@ class UserService:
                     f"Password must be at least {PASSWORD_MIN_LENGTH} characters"
                 )
 
+            #Validate verification code
+            cached_code = self.redis_client.get(user_data.email)
+
+            if int(cached_code) != int(user_data.verification_code):
+                raise VerificationCodeError("Invalid verification code")
+
             hashed_password = bcrypt_context.hash(user_data.password)
-            #Store user temporarily, with 'verified?' being false- awaiting implementation
-
-            #Generate 6 digit code and store code and database while sending a message that code has been sent 
-            # to the frontend
-
 
             return await self.user_repository.create_new_user(
                 user_data, hashed_password
@@ -102,9 +86,12 @@ class UserService:
             logger.warning(
                 f"Attempt to create duplicate user: {user_data.email}/{user_data.user_matric}"
             )
+            raise HTTPException(status_code=409, detail=str(e))
+        except VerificationCodeError as e:
+            logger.error(f"Invalid verification code: {str(e)}")
             raise HTTPException(status_code=400, detail=str(e))
         except ValueError as e:
-            logger.warning(f"Invalid user data: {str(e)}")
+            logger.error(f"Invalid user data: {str(e)}")
             raise HTTPException(status_code=400, detail=str(e))
         except Exception as e:
             logger.error(f"Error creating new user: {user_data.email}", exc_info=True)
@@ -112,16 +99,52 @@ class UserService:
                 status_code=500, detail="Something went wrong, contact admin."
             )
 
+    async def create_and_send_registration_code(
+        self, email: str, matric:str, backgroundTask: BackgroundTasks
+    ):
+        try:
+            # Check if code exist in database againsts user email and it has not expired
+            existing_user = await self.user_repository.get_user_by_email_or_matric(
+                    email=email, matric=matric
+                )
 
-    async def verify_registration_code(self, code: int):
-        #Check if code exist in database againsts user email and it has not expired
-        code = ...
-        if(code is None or "expired"):
-            return "Code has expired. Resend to get a new code"
+            if existing_user:
+                raise UserAlreadyExistsError(
+                    "User with this email or matric number already exists"
+                )       
+            
+            # Generate 6 digit random number
+            code = random.randint(100000, 999999)
+
+            #SO if the user already has a code, delete it and set a new one
+            if self.redis_client.exists(email):
+                self.redis_client.delete(email)
+
+            # Store code in redis with email as key
+            self.redis_client.set(email, code, ex=300)
+
+            body = await self._get_user_registration_email_template(email, code)
+
+            # Send code to user email
+            backgroundTask.add_task(
+                send_email,
+                subject=EMAIL_SUBJECTS["VERIFY"],
+                recipients=[email],
+                body=body,
+            )
+
+            return None
+        except UserAlreadyExistsError as e:
+            logger.warning(
+                f"Attempt to create duplicate user: {email}/{matric}"
+            )
+            raise HTTPException(status_code=409, detail=str(e))
+        except Exception as e:
+            logger.error(f"Error creating and sending registration code to {email}: {str(e)}", exc_info=True)
+            raise HTTPException(
+                status_code=500, detail="Something went wrong, contact admin."
+            )
         
-        if(code is "Verified"):
-            return "mark as verified"
-
     async def get_user_by_email_or_matric(
         self, email: str = None, matric: str = None
     ) -> Optional[Dict[str, Any]]:
@@ -146,7 +169,8 @@ class UserService:
 
         except Exception as e:
             logger.error(
-                f"Error fetching user by email/matric: {email} or {matric}", exc_info=True
+                f"Error fetching user by email/matric: {email} or {matric}",
+                exc_info=True,
             )
             raise HTTPException(
                 status_code=500, detail="Something went wrong, contact admin."
@@ -285,45 +309,181 @@ class UserService:
             logger.error(f"Error decoding token: {token[:10]}...", exc_info=True)
             raise HTTPException(status_code=500, detail="Something went wrong")
 
-    def _get_password_reset_email_template(self, username: str, reset_link: str) -> str:
+    async def _get_password_reset_email_template(
+        self, username: str, reset_link: str
+    ) -> str:
         """Generate HTML template for password reset email"""
         return f"""
-            <html>
+        <html>
+            <head>
+                <style>
+                    body {{
+                        font-family: Arial, sans-serif;
+                        background-color: #f4f4f4;
+                        padding: 20px;
+                        text-align: center;
+                    }}
+                    .container {{
+                        max-width: 500px;
+                        background: white;
+                        padding: 20px;
+                        border-radius: 8px;
+                        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+                        margin: auto;
+                    }}
+                    .header {{
+                        font-size: 24px;
+                        font-weight: bold;
+                        color: #333;
+                        margin-bottom: 10px;
+                    }}
+                    .button {{
+                        background: #007bff;
+                        color: white;
+                        padding: 12px 20px;
+                        font-size: 16px;
+                        text-decoration: none;
+                        border-radius: 5px;
+                        display: inline-block;
+                        margin: 15px 0;
+                    }}
+                    .footer {{
+                        font-size: 12px;
+                        color: #666;
+                        margin-top: 20px;
+                    }}
+                </style>
+            </head>
             <body>
-                <h3>
-                    Hi {username},
-                </h3>
-                <p>
-                    We received a request to reset your password. Click the link below to reset it: <br>{reset_link}
+                <div class="container">
+                    <div class="header">Password Reset Request</div>
+                    <p>Hi <strong>{username}</strong>,</p>
+                    <p>We received a request to reset your password. Click the button below to reset it:</p>
+                    <a class="button" style="color: white" href="{reset_link}">Reset Password</a>
+                    <p>This link will expire in <strong>{PASSWORD_RESET_TOKEN_EXPIRY_MINUTES} minutes</strong>.</p>
+                    <p>If you didn’t request this, you can safely ignore this email.</p>
+                    <hr>
+                    <div class="footer">
+                        Best Regards, <br>
+                        <strong>Ave Geofencing</strong>
+                    </div>
+                </div>
+            </body>
+        </html>
+        """
 
-                    <br><br> This link will expire in {PASSWORD_RESET_TOKEN_EXPIRY_MINUTES} minutes.
-                    <br>If you didn't request this, you can safely ignore this email.
-
-                    <br><br><br>
-                    Thanks,<br>
-                    Ave Geofencing.
-                </p>
-            </body> 
-            </html>
-            """
-
-    def _get_password_changed_email_template(self, username: str) -> str:
+    async def _get_password_changed_email_template(self, username: str) -> str:
         """Generate HTML template for password changed confirmation email"""
         return f"""
-            <html>
-                <body> 
-                    <h3>
-                        Hi {username},
-                    </h3>
-                    <p>
-                        Your password has just been changed. <br>If you didn't change your password and you think your account has been compromised, report to help.
+        <html>
+            <head>
+                <style>
+                    body {{
+                        font-family: Arial, sans-serif;
+                        background-color: #f4f4f4;
+                        padding: 20px;
+                        text-align: center;
+                    }}
+                    .container {{
+                        max-width: 500px;
+                        background: white;
+                        padding: 20px;
+                        border-radius: 8px;
+                        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+                        margin: auto;
+                    }}
+                    .header {{
+                        font-size: 24px;
+                        font-weight: bold;
+                        color: #333;
+                        margin-bottom: 10px;
+                    }}
+                    .alert {{
+                        color: #d9534f;
+                        font-weight: bold;
+                    }}
+                    .footer {{
+                        font-size: 12px;
+                        color: #666;
+                        margin-top: 20px;
+                    }}
+                </style>
+            </head>
+            <body>
+                <div class="container">
+                    <div class="header">Your Password Has Been Changed</div>
+                    <p>Hi <strong>{username}</strong>,</p>
+                    <p>Your password was successfully changed.</p>
+                    <p class="alert">If you did not change your password and believe your account has been compromised, please contact support immediately.</p>
+                    <hr>
+                    <div class="footer">
+                        Best Regards, <br>
+                        <strong>Ave Geofencing</strong>
+                    </div>
+                </div>
+            </body>
+        </html>
+        """
 
-                        <br><br>Thanks,<br>
-                        Ave Geofencing.
-                    </p>
-                </body>
-            </html>
-            """
+    async def _get_user_registration_email_template(self, email: str, code: int):
+        return f"""
+        <html>
+            <head>
+                <style>
+                    body {{
+                        font-family: Arial, sans-serif;
+                        background-color: #f4f4f4;
+                        padding: 20px;
+                        text-align: center;
+                    }}
+                    .container {{
+                        max-width: 500px;
+                        background: white;
+                        padding: 20px;
+                        border-radius: 8px;
+                        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+                        margin: auto;
+                    }}
+                    .header {{
+                        font-size: 24px;
+                        font-weight: bold;
+                        color: #333;
+                        margin-bottom: 10px;
+                    }}
+                    .code {{
+                        font-size: 28px;
+                        font-weight: bold;
+                        color: #007bff;
+                        background: #e7f1ff;
+                        padding: 10px 15px;
+                        display: inline-block;
+                        border-radius: 5px;
+                        margin: 10px 0;
+                    }}
+                    .footer {{
+                        font-size: 12px;
+                        color: #666;
+                        margin-top: 20px;
+                    }}
+                </style>
+            </head>
+            <body>
+                <div class="container">
+                    <div class="header">Welcome to Ave Geofencing!</div>
+                    <p>Dear User,</p>
+                    <p>Your registration code is:</p>
+                    <div class="code">{code}</div>
+                    <p>This code is valid for <strong>5 minutes</strong>. Please do not share it with anyone.</p>
+                    <p>If you did not request this code, please ignore this email.</p>
+                    <hr>
+                    <div class="footer">
+                        Best Regards, <br>
+                        <strong>Ave Geofencing</strong>
+                    </div>
+                </div>
+            </body>
+        </html>
+        """
 
     async def send_reset_password_email(
         self, user_email: str, background_tasks: BackgroundTasks
@@ -347,7 +507,7 @@ class UserService:
             reset_link = f"{settings.BASE_URL}user/student/reset_password?token={token}"
 
             # Generate email body
-            body = self._get_password_reset_email_template(
+            body = await self._get_password_reset_email_template(
                 username=user["user_username"], reset_link=reset_link
             )
 
@@ -370,7 +530,8 @@ class UserService:
             )
         except Exception as e:
             logger.error(
-                f"Error sending password reset email to {user_email}: {str(e)}", exc_info=True
+                f"Error sending password reset email to {user_email}: {str(e)}",
+                exc_info=True,
             )
             raise HTTPException(
                 status_code=500, detail="Something went wrong, contact admin"
@@ -402,7 +563,9 @@ class UserService:
             )
 
             # Send confirmation email
-            body = self._get_password_changed_email_template(username=user["username"])
+            body = await self._get_password_changed_email_template(
+                username=user["username"]
+            )
 
             background_tasks.add_task(
                 send_email,

@@ -3,6 +3,8 @@ from fastapi import Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 
+import uvicorn
+
 from .auth.APIKeys import get_api_key
 
 from .routers import *
@@ -59,3 +61,6 @@ app.include_router(AuthRouter)
 app.include_router(AdminRouter)
 app.include_router(StudentRouter)
 app.include_router(GeofenceRouter)
+
+if __name__ == "__main__":
+    uvicorn.run(__name__ + ":app", host="0.0.0.0", port=8000, reload=True)

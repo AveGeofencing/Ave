@@ -10,6 +10,7 @@ EMAIL_SUBJECTS = {
     "PASSWORD_CHANGED": "Password Changed",
     "WELCOME": "Welcome to Ave Geofencing",
     "ATTENDANCE_CONFIRMATION": "Attendance Confirmation",
+    "VERIFY": "Ave: Email Verification"
 }
 
 # Error messages

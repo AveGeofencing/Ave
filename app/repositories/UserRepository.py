@@ -31,6 +31,7 @@ class UserRepository:
             role=user.role,
             username=user.username,
             hashed_password=password_hash,
+            is_email_verified = True
         )
 
         self.session.add(new_user)
