@@ -5,7 +5,7 @@ from pydantic import EmailStr
 
 class Settings(BaseSettings):
     DATABASE_URL: str
-    ALEMBIC_DATABASE_URL: Union[str, None]
+    ALEMBIC_DATABASE_URL: Union[str, None] = None
     SECRET_KEY: str
     ALGORITHM: str
     echo_sql: bool = False
