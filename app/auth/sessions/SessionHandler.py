@@ -85,7 +85,7 @@ class SessionHandler:
 
         try:
             await self.redis_client.delete(session_token)
-            await self.redis_client.delete(f"user:{session_state["user_matric"]}")
+            await self.redis_client.delete(f"user:{session_state['user_matric']}")
             return "Logged out successfully"
         except Exception as e:
             logger.error(e)
