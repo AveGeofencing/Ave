@@ -12,13 +12,14 @@ class Settings(BaseSettings):
     API_KEYS: str
     WANT_SINGLE_SIGNIN: bool
     BASE_URL: str
+    COOKIE_DOMAIN: str
 
-    #Redis config
+    # Redis config
     REDIS_URL: str
     REDIS_HOST: str
     REDIS_PORT: int
     REDIS_DB: int
-    
+
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 
 

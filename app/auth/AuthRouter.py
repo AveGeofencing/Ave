@@ -8,6 +8,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from .APIKeys import get_api_key
 from ..database import get_db_session
+from ..utils.config import settings
+
 from passlib.context import CryptContext
 
 AuthRouter = APIRouter(prefix="/auth", tags=["auth"])
@@ -40,7 +42,7 @@ async def login(
         key="session_token",
         value=session_token,
         httponly=True,
-        domain=".onrender.com",
+        domain=settings.COOKIE_DOMAIN,
         secure=True,  # Set to True for HTTPS
         samesite="None",
         max_age=SESSION_TIMEOUT_MINUTES * 60,

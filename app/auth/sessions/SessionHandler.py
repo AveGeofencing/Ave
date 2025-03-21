@@ -77,19 +77,15 @@ class SessionHandler:
         return session_token
 
     async def deactivate_session(self, session_token):
-        session_state = await self.sessionRepository.get_user_session_by_token(
-            session_token
-        )
-        if session_state is None:
-            raise HTTPException(status_code=401, detail="Token expired or invalid")
+        session_state = json.loads(await self.redis_client.get(session_token))
+        print(session_state)
 
-        if session_state.is_expired:
-            raise HTTPException(
-                status_code=401, detail="Session has expired. Login again."
-            )
+        if session_state is None:
+            raise HTTPException(status_code=401, detail="Invalid token")
 
         try:
-            await self.sessionRepository.deactivate_session(session_token)
+            await self.redis_client.delete(session_token)
+            await self.redis_client.delete(f"user:{session_state["user_matric"]}")
             return "Logged out successfully"
         except Exception as e:
             logger.error(e)

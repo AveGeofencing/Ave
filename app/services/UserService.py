@@ -31,8 +31,6 @@ bcrypt_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 logger = logging.getLogger("uvicorn")
 
 
-
-
 class UserService:
     def __init__(
         self,
@@ -67,7 +65,7 @@ class UserService:
                     f"Password must be at least {PASSWORD_MIN_LENGTH} characters"
                 )
 
-            #Validate verification code
+            # Validate verification code
             cached_code = await self.redis_client.get(user_data.email)
 
             if int(cached_code) != int(user_data.verification_code):
@@ -97,23 +95,23 @@ class UserService:
             )
 
     async def create_and_send_registration_code(
-        self, email: str, matric:str, backgroundTask: BackgroundTasks
+        self, email: str, matric: str, backgroundTask: BackgroundTasks
     ):
         try:
             # Check if code exist in database againsts user email and it has not expired
             existing_user = await self.user_repository.get_user_by_email_or_matric(
-                    email=email, matric=matric
-                )
+                email=email, matric=matric
+            )
 
             if existing_user:
                 raise UserAlreadyExistsError(
                     "User with this email or matric number already exists"
-                )       
-            
+                )
+
             # Generate 6 digit random number
             code = random.randint(100000, 999999)
 
-            #SO if the user already has a code, delete it and set a new one
+            # SO if the user already has a code, delete it and set a new one
             if await self.redis_client.exists(email):
                 await self.redis_client.delete(email)
 
@@ -132,16 +130,17 @@ class UserService:
 
             return None
         except UserAlreadyExistsError as e:
-            logger.warning(
-                f"Attempt to create duplicate user: {email}/{matric}"
-            )
+            logger.warning(f"Attempt to create duplicate user: {email}/{matric}")
             raise HTTPException(status_code=409, detail=str(e))
         except Exception as e:
-            logger.error(f"Error creating and sending registration code to {email}: {str(e)}", exc_info=True)
+            logger.error(
+                f"Error creating and sending registration code to {email}: {str(e)}",
+                exc_info=True,
+            )
             raise HTTPException(
                 status_code=500, detail="Something went wrong, contact admin."
             )
-        
+
     async def get_user_by_email_or_matric(
         self, email: str = None, matric: str = None
     ) -> Optional[Dict[str, Any]]:
@@ -555,9 +554,7 @@ class UserService:
             )
 
             # Deactivate all user sessions for security
-            await self.session_repository.deactivate_all_user_sessions(
-                user["user_matric"]
-            )
+            await self.redis_client.delete(f"user:{user["user_matric"]}")
 
             # Send confirmation email
             body = await self._get_password_changed_email_template(
