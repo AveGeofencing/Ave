@@ -554,7 +554,7 @@ class UserService:
             )
 
             # Deactivate all user sessions for security
-            await self.redis_client.delete(f"user:{user["user_matric"]}")
+            await self.redis_client.delete(f"user:{user['user_matric']}")
 
             # Send confirmation email
             body = await self._get_password_changed_email_template(
