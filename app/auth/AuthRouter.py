@@ -1,3 +1,4 @@
+import logging
 from fastapi.security import OAuth2PasswordRequestForm
 from fastapi import APIRouter, Depends, HTTPException, Request, Response
 
@@ -22,6 +23,8 @@ bcrypt_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 SESSION_TIMEOUT_MINUTES = 24 * 60
 
+logger = logging.getLogger("uvicorn")
+
 
 @AuthRouter.post("/token", dependencies=[Depends(get_api_key)])
 async def login(
@@ -38,6 +41,7 @@ async def login(
     )
 
     session_token = user_login_response["session_token"]
+    logger.info(settings.COOKIE_DOMAIN)
     response.set_cookie(
         key="session_token",
         value=session_token,
