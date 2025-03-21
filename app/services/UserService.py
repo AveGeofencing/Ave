@@ -4,13 +4,13 @@ from typing import Optional, Dict, Any, Union
 from zoneinfo import ZoneInfo
 from datetime import timedelta, datetime
 
-import redis
 from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi import BackgroundTasks, HTTPException
 from passlib.context import CryptContext
 from pydantic import EmailStr
 from jose import JWTError, jwt
 
+from ..redis import RedisClient
 from .EmailService import send_email
 from ..exceptions import *
 from ..repositories import (
@@ -47,10 +47,7 @@ class UserService:
             password_reset_token_repository or PasswordResetTokenRepository(session)
         )
         self.session_repository = session_repository or SessionRepository(session)
-        self.redis_client = redis.Redis.from_url(
-            url= settings.REDIS_URL,
-            decode_responses=True,
-        )
+        self.redis_client = RedisClient.get_instance()
 
     async def create_new_user(self, user_data: UserCreateModel) -> Dict[str, str]:
         """Create a new user account"""
@@ -71,7 +68,7 @@ class UserService:
                 )
 
             #Validate verification code
-            cached_code = self.redis_client.get(user_data.email)
+            cached_code = await self.redis_client.get(user_data.email)
 
             if int(cached_code) != int(user_data.verification_code):
                 raise VerificationCodeError("Invalid verification code")
@@ -117,11 +114,11 @@ class UserService:
             code = random.randint(100000, 999999)
 
             #SO if the user already has a code, delete it and set a new one
-            if self.redis_client.exists(email):
-                self.redis_client.delete(email)
+            if await self.redis_client.exists(email):
+                await self.redis_client.delete(email)
 
             # Store code in redis with email as key
-            self.redis_client.set(email, code, ex=300)
+            await self.redis_client.set(email, code, ex=300)
 
             body = await self._get_user_registration_email_template(email, code)
 

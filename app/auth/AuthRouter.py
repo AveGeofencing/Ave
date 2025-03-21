@@ -1,4 +1,4 @@
-from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+from fastapi.security import OAuth2PasswordRequestForm
 from fastapi import APIRouter, Depends, HTTPException, Request, Response
 
 from app.auth.sessions.SessionHandler import SessionHandler
@@ -25,9 +25,9 @@ SESSION_TIMEOUT_MINUTES = 24 * 60
 async def login(
     response: Response,
     form_data: password_request_form,
-    session: DBSessionDep,
+    db_session: DBSessionDep,
 ):
-    sessionHandler = SessionHandler(session)
+    sessionHandler = SessionHandler(db_session)
 
     user_login_response = await sessionHandler.login(
         user_matric=form_data.username,

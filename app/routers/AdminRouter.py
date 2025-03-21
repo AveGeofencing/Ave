@@ -2,7 +2,6 @@ from datetime import datetime
 from typing import Annotated
 from fastapi import APIRouter, HTTPException, Request
 
-from app.auth.sessions.SessionHandler import SessionHandler
 from ..services import UserService
 from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi import Depends

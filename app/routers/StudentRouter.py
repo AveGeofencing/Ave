@@ -1,7 +1,6 @@
 from typing import Annotated, Optional
 from fastapi import APIRouter, HTTPException, Request
 
-from app.auth.sessions.SessionHandler import SessionHandler
 from ..services import UserService
 from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi import Depends, BackgroundTasks

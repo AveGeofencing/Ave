@@ -1,3 +1,4 @@
+import json
 import uuid
 from zoneinfo import ZoneInfo
 import logging
@@ -5,9 +6,10 @@ import logging
 from fastapi import HTTPException
 from datetime import datetime, timedelta
 from sqlalchemy.ext.asyncio import AsyncSession
-from ...repositories import SessionRepository
+from ...repositories import SessionRepository, UserRepository
 from passlib.context import CryptContext
 from ...utils.config import settings
+from ...redis import RedisClient
 
 bcrypt_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 WANT_SINGLE_SIGNIN_FLAG = settings.WANT_SINGLE_SIGNIN
@@ -16,31 +18,31 @@ logger = logging.getLogger("uvicorn")
 
 
 class SessionHandler:
-    def __init__(self, db_session: AsyncSession):
+    def __init__(self, db_session: AsyncSession = None):
         self.SESSION_TIMEOUT_MINUTES = 24 * 60
         self.sessionRepository = SessionRepository(db_session=db_session)
 
-    async def get_user_by_session(self, session_token):
-        session = await self.sessionRepository.get_user_session_by_token(session_token)
+        # redis
+        self.redis_client = RedisClient.get_instance()
 
-        if session and session.user:
+    async def get_user_by_session(self, session_token: str):
+        session = json.loads(await self.redis_client.get(session_token))
+        if session:
             return {
-                "user_matric": session.user.user_matric,
-                "email": session.user.email,
-                "username": session.user.username,
-                "role": session.user.role,
+                "user_matric": session["user_matric"],
+                "email": session["email"],
+                "username": session["username"],
+                "role": session["role"],
             }
 
         return None
 
     async def get_user_session_by_matric(self, user_matric: str):
-        existing_user_session = await self.sessionRepository.get_user_session_by_matric(
-            user_matric
-        )
+        existing_user_session = await self.redis_client.get(f"user:{user_matric}")
         return existing_user_session
 
-    async def create_new_session(self, user_matric: str):
-        existing_user_session = await self.get_user_session_by_matric(user_matric)
+    async def create_new_session(self, user_matric: str, email: str, role: str):
+        existing_user_session = await self.redis_client.get(f"user:{user_matric}")
         if existing_user_session:
             if WANT_SINGLE_SIGNIN_FLAG:
                 raise HTTPException(
@@ -48,21 +50,31 @@ class SessionHandler:
                     detail=f"Already logged in. Sign out of other devices before logging in again",
                 )
 
-            return existing_user_session.token
+            return existing_user_session
 
-        NOW = datetime.now(ZoneInfo("UTC"))
+        # generate new user session
+        session_token = str(uuid.uuid4())
 
-        EXPIRES_AT = NOW + timedelta(days=1)
-        session_token = str(uuid.uuid4())  # Generate a unique session token
+        user_data = {
+            "user_matric": user_matric,
+            "email": email,
+            "username": user_matric,
+            "role": role,
+        }
 
-        token = await self.sessionRepository.create_new_session(
-            session_token=session_token,
-            EXPIRES_AT=EXPIRES_AT,
-            user_matric=user_matric,
-            created_at=NOW,
-            updated_at=NOW,
+        # Setting the session in redis
+        await self.redis_client.set(
+            f"{session_token}",  # Token as the key
+            json.dumps(user_data),  # Json object containing user_data
+            ex=timedelta(days=1),
         )
-        return token
+
+        # Reverse mapping to quickly find user session by matric
+        await self.redis_client.set(
+            f"user:{user_matric}", session_token, ex=timedelta(days=1)
+        )
+
+        return session_token
 
     async def deactivate_session(self, session_token):
         session_state = await self.sessionRepository.get_user_session_by_token(
@@ -97,7 +109,9 @@ class SessionHandler:
             )
 
         session_token = await self.create_new_session(
-            user_matric=existing_user.user_matric
+            user_matric=existing_user.user_matric,
+            email=existing_user.email,
+            role=existing_user.role,
         )
 
         return {
