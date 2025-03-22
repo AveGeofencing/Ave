@@ -19,7 +19,7 @@ class Settings(BaseSettings):
     REDIS_URL: str
 
     model_config = SettingsConfigDict(
-        env_file="ave-backend/.env" if os.getenv("ENV") != "production" else None,
+        env_file=".env",
         extra="ignore",
     )
 
@@ -36,8 +36,7 @@ class EmailSettings(BaseSettings):
     VALIDATE_CERTS: bool
 
     model_config = SettingsConfigDict(
-        env_file="ave-backend/.env" if os.getenv("ENV") != "production" else None,
-        extra="ignore",
+        env_file=".env", extra="ignore",
     )
 
 

@@ -1,6 +1,6 @@
 from typing import Annotated
 
-from ..models import Session, User
+from ..models import User
 from ..database import get_db_session
 
 from fastapi import Depends
@@ -11,6 +11,9 @@ from sqlalchemy.orm import selectinload
 
 DatabaseDependency = Annotated[AsyncSession, Depends(get_db_session)]
 
+"""
+Keeping this class in for backwards compatibility. I don't even know
+"""
 
 class SessionRepository:
     def __init__(self, db_session: AsyncSession):
@@ -23,23 +26,23 @@ class SessionRepository:
 
         return user
 
-    async def get_user_session_by_token(self, session_token):
-        stmt = (
-            select(Session)
-            .options(selectinload(Session.user))
-            .filter(and_(Session.token == session_token, Session.is_expired == False))
-        )
+    # async def get_user_session_by_token(self, session_token):
+    #     stmt = (
+    #         select(Session)
+    #         .options(selectinload(Session.user))
+    #         .filter(and_(Session.token == session_token, Session.is_expired == False))
+    #     )
 
-        result = await self.db_session.execute(stmt)
-        return result.scalars().first()
+    #     result = await self.db_session.execute(stmt)
+    #     return result.scalars().first()
 
-    async def get_user_session_by_matric(self, user_matric: str):
-        stmt = select(Session).filter(
-            and_(Session.user_id == user_matric, Session.is_expired == False)
-        )
-        result = await self.db_session.execute(stmt)
+    # async def get_user_session_by_matric(self, user_matric: str):
+    #     stmt = select(Session).filter(
+    #         and_(Session.user_id == user_matric, Session.is_expired == False)
+    #     )
+    #     result = await self.db_session.execute(stmt)
 
-        return result.scalars().first()
+    #     return result.scalars().first()
 
 
 def get_session_repository(db_session: DatabaseDependency):

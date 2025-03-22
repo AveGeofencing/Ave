@@ -15,6 +15,5 @@ class User(Base):
     role: Mapped[str] = mapped_column(String(15))
 
     geofences = relationship("Geofence", back_populates="creator")
-    sessions = relationship("Session", back_populates="user")
     password_reset_tokens = relationship("PasswordResetToken", back_populates="user")
     attendances = relationship("AttendanceRecord", back_populates="user")

@@ -1,4 +1,3 @@
-from typing import Annotated
 from fastapi import Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
@@ -8,32 +7,32 @@ import uvicorn
 from .auth.APIKeys import get_api_key
 
 from .routers import *
-from .database import sessionmanager, Base
 from .auth.AuthRouter import AuthRouter
 
-
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    """
-    Function that handles startup and shutdown events.
-    To understand more, read https://fastapi.tiangolo.com/advanced/events/
-    """
-    # Startup logic: Create database tables
-    async with sessionmanager._engine.begin() as connection:
-        await connection.run_sync(Base.metadata.create_all)
-
-    yield
-    if sessionmanager._engine is not None:
-        # Close the DB connection
-        await sessionmanager.close()
 
 
 app = FastAPI(
     title="Ave Geofencing",
     description="A smart solution for student attendance",
     version="V1",
-    lifespan=lifespan,
 )
+
+# @app.exception_handler(UserServiceException)
+# async def handle_user_service_error(request, exc: UserServiceException):
+#     return JSONResponse(
+#         status_code=exc.status_code,
+#         content={"error": exc.message},
+#         headers={"X-Error-Type": "UserServiceException"},
+#     )
+
+# @app.exception_handler(GeofenceServiceException)
+# async def hanlde_geofence_service_error(request, exc: GeofenceServiceException):
+#     return JSONResponse(
+#         status_code=exc.status_code,
+#         content={"error": exc.message},
+#         headers={"X-Error-Type": "GeofenceServiceException"},
+#     )
+
 
 origins = [
     "http://127.0.0.0:3000",

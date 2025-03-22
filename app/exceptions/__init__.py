@@ -3,7 +3,7 @@ from .UserExceptions import (
     UserAlreadyExistsError,
     UserNotFoundError,
     VerificationCodeError,
-    UserServiceError,
+    UserServiceException,
 )
 from .GeofenceExceptions import (
     GeofenceServiceException,
@@ -19,7 +19,7 @@ __all__ = [
     "UserAlreadyExistsError",
     "UserNotFoundError",
     "VerificationCodeError",
-    "UserServiceError",
+    "UserServiceException",
     "GeofenceServiceException",
     "GeofenceAlreadyExistException",
     "InvalidDurationException",
