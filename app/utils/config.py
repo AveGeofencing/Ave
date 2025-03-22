@@ -1,3 +1,4 @@
+import os
 from typing import Union
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from pydantic import EmailStr
@@ -16,11 +17,11 @@ class Settings(BaseSettings):
 
     # Redis config
     REDIS_URL: str
-    REDIS_HOST: str
-    REDIS_PORT: int
-    REDIS_DB: int
 
-    model_config = SettingsConfigDict(env_file=".env", extra="ignore")
+    model_config = SettingsConfigDict(
+        env_file="ave-backend/.env" if os.getenv("ENV") != "production" else None,
+        extra="ignore",
+    )
 
 
 class EmailSettings(BaseSettings):
@@ -34,8 +35,15 @@ class EmailSettings(BaseSettings):
     USE_CREDENTIALS: bool
     VALIDATE_CERTS: bool
 
-    model_config = SettingsConfigDict(env_file=".env", extra="ignore")
+    model_config = SettingsConfigDict(
+        env_file="ave-backend/.env" if os.getenv("ENV") != "production" else None,
+        extra="ignore",
+    )
 
 
-email_settings = EmailSettings()
-settings = Settings()
+def get_email_settings():
+    return EmailSettings()
+
+
+def get_app_settings():
+    return Settings()

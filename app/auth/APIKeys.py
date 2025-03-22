@@ -1,10 +1,11 @@
 from fastapi import HTTPException, Security
 from fastapi.security import APIKeyHeader
-from ..utils.config import settings
+from ..utils.config import get_app_settings
 import logging
 
 logger = logging.getLogger("uvicorn")
 
+settings = get_app_settings()
 API_KEYS = settings.API_KEYS.split(",")
 api_key_header = APIKeyHeader(name="x-api-key", auto_error=False)
 

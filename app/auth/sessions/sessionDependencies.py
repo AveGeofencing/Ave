@@ -1,10 +1,6 @@
 from typing import Annotated
 from fastapi import Depends, Request, HTTPException
-from sqlalchemy.ext.asyncio import AsyncSession
-from .SessionHandler import SessionHandler
-from ...database import get_db_session
-
-DBSessionDep = Annotated[AsyncSession, Depends(get_db_session)]
+from . import SessionHandler, get_session_handler
 
 
 def get_session_id(request: Request):
@@ -16,20 +12,20 @@ def get_session_id(request: Request):
 
 
 async def authenticate_user_by_session_token(
-    session: DBSessionDep, session_token: str = Depends(get_session_id)
+    session_handler: Annotated[SessionHandler, Depends(get_session_handler)],
+    session_token: str = Depends(get_session_id),
 ):
     if not session_token:
         raise HTTPException(status_code=401, detail="No session token provided")
 
-    sessionHandler = SessionHandler(session)
-    user_data = await sessionHandler.get_user_by_session(session_token)
+    user_data = await session_handler.get_user_by_session(session_token)
 
     return user_data
 
 
 async def authenticate_student_user(
     user_data: dict = Depends(authenticate_user_by_session_token),
-):
+) -> dict:
     if not user_data:
         raise HTTPException(status_code=404, detail="No session token. Login again")
 
@@ -43,7 +39,7 @@ async def authenticate_student_user(
 
 async def authenticate_admin_user(
     user_data: dict = Depends(authenticate_user_by_session_token),
-):
+) -> dict:
     if not user_data:
         raise HTTPException(status_code=401, detail="No session token. Login again")
     if user_data["role"] != "admin":

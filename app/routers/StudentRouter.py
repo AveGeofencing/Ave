@@ -1,24 +1,23 @@
 from typing import Annotated, Optional
-from fastapi import APIRouter, HTTPException, Request
+from fastapi import APIRouter
 
-from ..services import UserService
-from sqlalchemy.ext.asyncio import AsyncSession
-from fastapi import Depends, BackgroundTasks
-from ..database import get_db_session
+from ..services import UserService, get_user_service
+from fastapi import Depends
 from ..auth.sessions.sessionDependencies import authenticate_student_user
 
 StudentRouter = APIRouter(prefix="/user/student", tags=["Users/Student"])
 
-DBSessionDep = Annotated[AsyncSession, Depends(get_db_session)]
 authenticate_student = Annotated[dict, Depends(authenticate_student_user)]
+UserServiceDependency = Annotated[UserService, Depends(get_user_service)]
 
 
 @StudentRouter.get("/get_my_records")
 async def get_my_records(
-    course_title: Optional[str], session: DBSessionDep, student: authenticate_student
+    course_title: Optional[str],
+    student: authenticate_student,
+    user_service: UserServiceDependency,
 ):
-    userService = UserService(session)
-    user_records = await userService.get_user_records(
+    user_records = await user_service.get_user_records(
         student["user_matric"], course_title
     )
     return user_records

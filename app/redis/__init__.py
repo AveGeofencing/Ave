@@ -1,1 +1,1 @@
-from .RedisClient import RedisClient
+from .RedisClient import RedisClient, get_redis_client

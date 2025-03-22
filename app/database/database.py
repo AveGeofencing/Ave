@@ -1,7 +1,9 @@
 import contextlib
-from typing import Any, AsyncIterator
+from typing import Annotated, Any, AsyncIterator
 
-from app.utils.config import settings
+from fastapi import Depends
+
+from ..utils import get_app_settings
 from sqlalchemy.ext.asyncio import (
     AsyncConnection,
     AsyncSession,
@@ -10,7 +12,9 @@ from sqlalchemy.ext.asyncio import (
 )
 from sqlalchemy.orm import DeclarativeBase
 
+settings = get_app_settings()
 DATABASE_URL = settings.DATABASE_URL
+
 
 class Base(DeclarativeBase):
     # https://docs.sqlalchemy.org/en/14/orm/extensions/asyncio.html#preventing-implicit-io-when-using-asyncsession
@@ -60,9 +64,7 @@ class DatabaseSessionManager:
             await session.close()
 
 
-sessionmanager = DatabaseSessionManager(
-    DATABASE_URL, {"echo": settings.echo_sql}
-)
+sessionmanager = DatabaseSessionManager(DATABASE_URL, {"echo": settings.echo_sql})
 
 
 async def get_db_session():

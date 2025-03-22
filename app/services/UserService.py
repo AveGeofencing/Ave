@@ -1,51 +1,57 @@
 import logging
 import random
-from typing import Optional, Dict, Any, Union
+
+from typing import Annotated, Optional, Dict, Any, Union
 from zoneinfo import ZoneInfo
 from datetime import timedelta, datetime
 
-from sqlalchemy.ext.asyncio import AsyncSession
-from fastapi import BackgroundTasks, HTTPException
+from redis.asyncio import Redis
+from fastapi import BackgroundTasks, HTTPException, Depends
 from passlib.context import CryptContext
 from pydantic import EmailStr
 from jose import JWTError, jwt
 
-from ..redis import RedisClient
+from ..redis import get_redis_client
 from .EmailService import send_email
 from ..exceptions import *
 from ..repositories import (
     PasswordResetTokenRepository,
-    SessionRepository,
+    get_password_reset_token_repository,
     UserRepository,
+    get_user_repository,
 )
 from ..schemas import UserCreateModel
-from ..utils.config import settings
-from ..utils.constants import (
+from ..utils import (
     PASSWORD_RESET_TOKEN_EXPIRY_MINUTES,
     EMAIL_SUBJECTS,
     PASSWORD_MIN_LENGTH,
+    get_app_settings
 )
 
 # Create a password context for hashing
 bcrypt_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 logger = logging.getLogger("uvicorn")
+settings = get_app_settings()
+# Dependencies
+RedisClientDependency = Annotated[Redis, Depends(get_redis_client)]
+UserRepositoryDependency = Annotated[UserRepository, Depends(get_user_repository)]
+PRTDependency = Annotated[
+    PasswordResetTokenRepository, Depends(get_password_reset_token_repository)
+]
 
 
 class UserService:
     def __init__(
         self,
-        session: AsyncSession,
-        user_repository: Optional[UserRepository] = None,
+        redis_client: Optional[Redis] = None,
+        user_repository: UserRepository = None,
         password_reset_token_repository: Optional[PasswordResetTokenRepository] = None,
-        session_repository: Optional[SessionRepository] = None,
     ):
-        self.session = session
-        self.user_repository = user_repository or UserRepository(session)
-        self.password_reset_token_repository = (
-            password_reset_token_repository or PasswordResetTokenRepository(session)
+        self.redis_client: Redis = redis_client
+        self.user_repository: UserRepository = user_repository
+        self.password_reset_token_repository: PasswordResetTokenRepository = (
+            password_reset_token_repository
         )
-        self.session_repository = session_repository or SessionRepository(session)
-        self.redis_client = RedisClient.get_instance()
 
     async def create_new_user(self, user_data: UserCreateModel) -> Dict[str, str]:
         """Create a new user account"""
@@ -577,3 +583,15 @@ class UserService:
                 f"Error changing password with token {token[:10]}...", exc_info=True
             )
             raise HTTPException(status_code=500, detail="Something went wrong")
+
+
+def get_user_service(
+    redis_client: RedisClientDependency,
+    user_repository: UserRepositoryDependency,
+    password_reset_token_repository: PRTDependency,
+) -> UserService:
+    return UserService(
+        redis_client=redis_client,
+        user_repository=user_repository,
+        password_reset_token_repository=password_reset_token_repository,
+    )

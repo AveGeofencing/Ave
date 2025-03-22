@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field, AwareDatetime
+from pydantic import BaseModel, ConfigDict, Field, AwareDatetime
 
 
 class GeofenceCreateModel(BaseModel):
@@ -10,5 +10,5 @@ class GeofenceCreateModel(BaseModel):
     start_time: AwareDatetime
     end_time: AwareDatetime
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
+

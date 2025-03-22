@@ -1,13 +1,18 @@
 from datetime import datetime
+from typing import Annotated
 from zoneinfo import ZoneInfo
 
+from ..database import get_db_session
 from ..models import Geofence, AttendanceRecord
 from ..schemas import AttendanceRecordModel, GeofenceCreateModel
 
+from fastapi import Depends
 from sqlalchemy import and_, func
 from sqlalchemy.orm import selectinload
 from sqlalchemy.future import select
 from sqlalchemy.ext.asyncio import AsyncSession
+
+DatabaseDependency = Annotated[AsyncSession, Depends(get_db_session)]
 
 
 class GeofenceRepository:
@@ -138,3 +143,7 @@ class GeofenceRepository:
 
         attendances = result.scalars().all()
         return attendances
+
+
+def get_geofence_repository(db_session: DatabaseDependency) -> GeofenceRepository:
+    return GeofenceRepository(session=db_session)

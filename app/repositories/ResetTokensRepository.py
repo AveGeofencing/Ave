@@ -1,9 +1,13 @@
-from typing import Union
+from fastapi import Depends
+from typing import Annotated, Union
 from sqlalchemy import select, or_, update
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import or_
 
 from ..models import PasswordResetToken
+from ..database import get_db_session
+
+DatabaseDependency = Annotated[AsyncSession, Depends(get_db_session)]
 
 
 class PasswordResetTokenRepository:
@@ -60,3 +64,9 @@ class PasswordResetTokenRepository:
         reset_token = result.scalars().first()
         reset_token.is_used = True
         await self.session.commit()
+
+
+def get_password_reset_token_repository(
+    db_session: DatabaseDependency,
+) -> PasswordResetTokenRepository:
+    return PasswordResetTokenRepository(session=db_session)

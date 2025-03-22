@@ -2,49 +2,28 @@ from datetime import datetime, timezone
 import logging
 import random
 import string
-from typing import Dict, Optional
+from typing import Annotated, Dict, Optional
 from zoneinfo import ZoneInfo
 
-from fastapi import HTTPException
-from sqlalchemy.ext.asyncio import AsyncSession
-
+from fastapi import Depends, HTTPException
+from ..exceptions import *
 from ..schemas import GeofenceCreateModel, AttendanceRecordModel
-from ..services import UserService
-from ..repositories import GeofenceRepository
-from ..utils.GeofenceUtils import check_user_in_circular_geofence
+from ..services import get_user_service, UserService
+from ..repositories import GeofenceRepository, get_geofence_repository
+from ..utils import check_user_in_circular_geofence
 
 
 logger = logging.getLogger("uvicorn")
 
-
-class GeofenceServiceException(Exception):
-    pass
-
-
-class GeofenceAlreadyExistException(GeofenceServiceException):
-    pass
-
-
-class InvalidDurationException(GeofenceServiceException):
-    pass
-
-
-class GeofenceStatusException(GeofenceServiceException):
-    pass
-
-
-class AlreadyRecordedAttendanceException(GeofenceServiceException):
-    pass
-
-
-class UserNotInGeofenceException(GeofenceServiceException):
-    pass
+# Dependencies
+GeofenceRepositoryDependency = Annotated[
+    GeofenceRepository, Depends(get_geofence_repository)
+]
 
 
 class GeofenceService:
-    def __init__(self, session: AsyncSession):
-        self.session = session
-        self.geofenceRepository = GeofenceRepository(self.session)
+    def __init__(self, geofence_repository: GeofenceRepository):
+        self.geofenceRepository: GeofenceRepository = geofence_repository
 
     async def create_geofence(
         self,
@@ -153,7 +132,9 @@ class GeofenceService:
     async def get_geofence_attendances(
         self, fence_code: str, user_id: str
     ) -> Dict[str, any]:
-        geofence = await self.geofenceRepository.get_geofence_by_fence_code(fence_code=fence_code)
+        geofence = await self.geofenceRepository.get_geofence_by_fence_code(
+            fence_code=fence_code
+        )
         if not geofence:
             raise HTTPException(
                 status_code=404,
@@ -194,9 +175,9 @@ class GeofenceService:
         self,
         attendance: AttendanceRecordModel,
         user_matric: str,
-        userService: UserService,
+        user_service: Annotated[UserService, Depends(get_user_service)],
     ):
-        user = await userService.get_user_by_email_or_matric(matric=user_matric)
+        user = await user_service.get_user_by_email_or_matric(matric=user_matric)
         if not user:
             raise HTTPException(status_code=404, detail="User not found.")
         geofence = await self.geofenceRepository.get_geofence_by_fence_code(
@@ -252,7 +233,7 @@ class GeofenceService:
         self, geofence_name: str, date: datetime, user_matric: str
     ):
         geofence = await self.geofenceRepository.get_geofence(geofence_name, date)
-        
+
         if geofence is None:
             raise HTTPException(
                 status_code=404, detail=f"Geofence {geofence_name} not found."
@@ -278,3 +259,9 @@ class GeofenceService:
             raise HTTPException(
                 status_code=500, detail="Something went wrong, contact admin."
             )
+
+
+def get_geofence_service(
+    geofence_repository: GeofenceRepositoryDependency,
+) -> GeofenceService:
+    return GeofenceService(geofence_repository=geofence_repository)

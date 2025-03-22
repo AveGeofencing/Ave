@@ -1,10 +1,15 @@
-from ..models import Session, User
+from typing import Annotated
 
-from sqlalchemy.ext.asyncio import AsyncSession
+from ..models import Session, User
+from ..database import get_db_session
+
+from fastapi import Depends
 from sqlalchemy import and_, delete, or_
-from datetime import datetime
+from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from sqlalchemy.orm import selectinload
+
+DatabaseDependency = Annotated[AsyncSession, Depends(get_db_session)]
 
 
 class SessionRepository:
@@ -35,3 +40,7 @@ class SessionRepository:
         result = await self.db_session.execute(stmt)
 
         return result.scalars().first()
+
+
+def get_session_repository(db_session: DatabaseDependency):
+    return SessionRepository(db_session)

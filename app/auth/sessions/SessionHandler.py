@@ -2,28 +2,35 @@ import json
 import uuid
 from zoneinfo import ZoneInfo
 import logging
+from typing import Annotated
 
-from fastapi import HTTPException
-from datetime import datetime, timedelta
-from sqlalchemy.ext.asyncio import AsyncSession
-from ...repositories import SessionRepository, UserRepository
+from fastapi import HTTPException, Depends
+from datetime import timedelta
+from redis.asyncio import Redis
+from ...repositories import SessionRepository, UserRepository, get_session_repository
 from passlib.context import CryptContext
-from ...utils.config import settings
-from ...redis import RedisClient
+from ...utils.config import get_app_settings
+from ...redis import get_redis_client
+
+settings = get_app_settings()
 
 bcrypt_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 WANT_SINGLE_SIGNIN_FLAG = settings.WANT_SINGLE_SIGNIN
 
 logger = logging.getLogger("uvicorn")
 
+# Dependencies
+SessionRepositoryDependency = Annotated[
+    SessionRepository, Depends(get_session_repository)
+]
+RedisClientDependency = Annotated[Redis, Depends(get_redis_client)]
+
 
 class SessionHandler:
-    def __init__(self, db_session: AsyncSession = None):
-        self.SESSION_TIMEOUT_MINUTES = 24 * 60
-        self.sessionRepository = SessionRepository(db_session=db_session)
-
+    def __init__(self, sessionRepository: SessionRepository, redis_client: Redis):
         # redis
-        self.redis_client = RedisClient.get_instance()
+        self.redis_client = redis_client
+        self.sessionRepository = sessionRepository
 
     async def get_user_by_session(self, session_token: str):
         session = json.loads(await self.redis_client.get(session_token))
@@ -116,3 +123,12 @@ class SessionHandler:
             "username": existing_user.username,
             "role": existing_user.role,
         }
+
+
+def get_session_handler(
+    session_repository: SessionRepositoryDependency, redis_client: RedisClientDependency
+) -> SessionHandler:
+
+    return SessionHandler(
+        sessionRepository=session_repository, redis_client=redis_client
+    )

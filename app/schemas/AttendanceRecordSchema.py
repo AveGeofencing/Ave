@@ -6,6 +6,7 @@ class AttendanceRecordModel(BaseModel):
     long: float
     fence_code: str
 
+
 class AttendanceRecordOut(BaseModel):
     username: str
     user_matric: str

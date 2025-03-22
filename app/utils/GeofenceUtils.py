@@ -6,7 +6,6 @@ import math
 import random
 import string
 
-from ..models import Geofence
 
 
 def haversine(lat1, lon1, lat2, lon2):
@@ -23,7 +22,7 @@ def haversine(lat1, lon1, lat2, lon2):
     )  # Convert to meters
 
 
-def check_user_in_circular_geofence(user_lat, user_lng, geofence: Geofence):
+def check_user_in_circular_geofence(user_lat, user_lng, geofence):
     latitude = geofence.latitude
     longitude = geofence.longitude
     radius = geofence.radius
