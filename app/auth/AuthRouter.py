@@ -40,7 +40,6 @@ async def login(
     )
 
     session_token = user_login_response["session_token"]
-    logger.info(settings.COOKIE_DOMAIN)
     response.set_cookie(
         key="session_token",
         value=session_token,
