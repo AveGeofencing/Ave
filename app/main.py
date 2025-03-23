@@ -1,6 +1,8 @@
-from fastapi import Depends, FastAPI
+import time
+from fastapi import Depends, FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
+import logging
 
 import uvicorn
 
@@ -9,7 +11,7 @@ from .auth.APIKeys import get_api_key
 from .routers import *
 from .auth.AuthRouter import AuthRouter
 
-
+logger=logging.getLogger("uvicorn")
 
 app = FastAPI(
     title="Ave Geofencing",
@@ -32,6 +34,16 @@ app = FastAPI(
 #         content={"error": exc.message},
 #         headers={"X-Error-Type": "GeofenceServiceException"},
 #     )
+
+
+@app.middleware("http")
+async def measure_response_time(request: Request, call_next):
+    start_time = time.perf_counter()  # Start timer
+    response = await call_next(request)  # Process request
+    end_time = time.perf_counter()  # End timer
+    duration = (end_time - start_time) * 1000  # Convert to milliseconds
+    logger.info(f"Request: {request.method} {request.url} - {duration:.2f} ms")
+    return response
 
 
 origins = [
