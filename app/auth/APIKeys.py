@@ -16,7 +16,6 @@ def get_api_key(
     """Retrieve and validate an API key from the query parameters or HTTP header.
 
     Args:
-        api_key_query: The API key passed as a query parameter.
         api_key_header: The API key passed in the HTTP header.
 
     Returns:

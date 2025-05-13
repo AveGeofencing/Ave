@@ -4,6 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from ..auth.APIKeys import get_api_key
 
+from ..schemas import UserOutputModel
 from ..services import UserService, get_user_service
 from ..database.database import get_db_session
 from ..schemas.UserSchema import UserCreateModel
@@ -13,11 +14,17 @@ GeneralUserRouter = APIRouter(prefix="/user", tags=["General User"])
 UserServiceDependency = Annotated[UserService, Depends(get_user_service)]
 
 
-@GeneralUserRouter.post("/create_user", dependencies=[Depends(get_api_key)])
+@GeneralUserRouter.post(
+        path="/create_user", 
+        dependencies=[Depends(get_api_key)], 
+        response_model=UserOutputModel,
+        summary="Creating a new user",
+        )
 async def create_new_user(user: UserCreateModel, user_service: UserServiceDependency):
-    created_message = await user_service.create_new_user(user)
+    """Endpoint for creating new user in the system"""
+    new_user = await user_service.create_new_user(user)
 
-    return created_message
+    return new_user
 
 
 @GeneralUserRouter.post("/send_verification_code")

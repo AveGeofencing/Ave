@@ -261,6 +261,7 @@ class GeofenceService:
             )
 
 
+# Dependency Resolver function
 def get_geofence_service(
     geofence_repository: GeofenceRepositoryDependency,
 ) -> GeofenceService:

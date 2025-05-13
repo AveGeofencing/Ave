@@ -18,7 +18,10 @@ conf = ConnectionConfig(
 
 # Send Email Function
 async def send_email(
-    subject: str, recipients: list, body: dict, template_name: str = None
+    subject: str, 
+    recipients: list, 
+    body: dict, 
+    template_name: str|None = None
 ):
     try:
         message = MessageSchema(

@@ -10,3 +10,11 @@ class UserCreateModel(BaseModel):
     verification_code: str
 
     model_config = ConfigDict(from_attributes=True)
+
+class UserOutputModel(BaseModel):
+    email: EmailStr
+    username: str
+    user_matric: str
+    role: str
+
+    model_config = ConfigDict(from_attributes=True)

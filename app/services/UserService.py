@@ -1,6 +1,5 @@
 import logging
 import random
-
 from typing import Annotated, Optional, Dict, Any, Union
 from zoneinfo import ZoneInfo
 from datetime import timedelta, datetime
@@ -11,6 +10,7 @@ from passlib.context import CryptContext
 from pydantic import EmailStr
 from jose import JWTError, jwt
 
+from ..models import User
 from ..redis import get_redis_client
 from .EmailService import send_email
 from ..exceptions import *
@@ -53,7 +53,7 @@ class UserService:
             password_reset_token_repository
         )
 
-    async def create_new_user(self, user_data: UserCreateModel) -> Dict[str, str]:
+    async def create_new_user(self, user_data: UserCreateModel) -> User:
         """Create a new user account"""
         try:
             existing_user = await self.user_repository.get_user_by_email_or_matric(
@@ -149,17 +149,19 @@ class UserService:
 
     async def get_user_by_email_or_matric(
         self, email: str = None, matric: str = None
-    ) -> Optional[Dict[str, Any]]:
+    ) -> Dict[str, Any]:
         """Retrieve user information by email or matric number"""
         if not email and not matric:
-            raise HTTPException(
-                status_code=400, detail="Email or matric number must be provided"
+            raise UserServiceException(
+                "Email or matric number must be provided"
             )
 
         try:
             user = await self.user_repository.get_user_by_email_or_matric(email, matric)
             if user is None:
-                return None
+                raise UserNotFoundError(
+                    f"User with email {email} or matric {matric} not found"
+                    )
 
             return {
                 "user_username": user.username,
@@ -169,6 +171,9 @@ class UserService:
                 "user_attendances": user.attendances,
             }
 
+        except UserServiceException as e:
+            logger.warning(str(e))
+            raise HTTPException(status_code=400, detail=str(e))
         except Exception as e:
             logger.error(
                 f"Error fetching user by email/matric: {email} or {matric}",
@@ -427,7 +432,7 @@ class UserService:
         </html>
         """
 
-    async def _get_user_registration_email_template(self, email: str, code: int):
+    async def _get_user_registration_email_template(self, code: int):
         return f"""
         <html>
             <head>
@@ -528,7 +533,7 @@ class UserService:
         except TokenError as e:
             logger.error(f"Token generation error for {user_email}: {str(e)}")
             raise HTTPException(
-                status_code=500, detail="Failed to generate reset token"
+                status_code=500, detail="Something went wrong. Contact admin."
             )
         except Exception as e:
             logger.error(
@@ -585,6 +590,7 @@ class UserService:
             raise HTTPException(status_code=500, detail="Something went wrong")
 
 
+#Dependency Resolver function
 def get_user_service(
     redis_client: RedisClientDependency,
     user_repository: UserRepositoryDependency,

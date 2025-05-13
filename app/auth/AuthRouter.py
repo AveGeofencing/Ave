@@ -1,18 +1,16 @@
 import logging
 from fastapi.security import OAuth2PasswordRequestForm
 from fastapi import APIRouter, Depends, HTTPException, Request, Response
-
-from .sessions import SessionHandler, get_session_handler
-
 from typing import Annotated
 
+from .sessions import SessionHandler, get_session_handler
 from .APIKeys import get_api_key
 from ..utils.config import get_app_settings
 
 from passlib.context import CryptContext
 
-AuthRouter = APIRouter(prefix="/auth", tags=["auth"])
 
+AuthRouter = APIRouter(prefix="/auth", tags=["auth"])
 # Dependency
 password_request_form = Annotated[OAuth2PasswordRequestForm, Depends()]
 api_key_dependency = Annotated[str, Depends(get_api_key)]
@@ -46,7 +44,7 @@ async def login(
         httponly=True,
         # domain=settings.COOKIE_DOMAIN,
         secure=True,  # Set to True for HTTPS
-        samesite="None",
+        samesite="none",
         max_age=SESSION_TIMEOUT_MINUTES * 60,
     )
 

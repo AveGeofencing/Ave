@@ -13,7 +13,7 @@ UserServiceDependency = Annotated[UserService, Depends(get_user_service)]
 
 @StudentRouter.get("/get_my_records")
 async def get_my_records(
-    course_title: Optional[str],
+    course_title: str | None,
     student: authenticate_student,
     user_service: UserServiceDependency,
 ):
