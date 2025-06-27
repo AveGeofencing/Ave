@@ -9,7 +9,7 @@ class Settings(BaseSettings):
     ALEMBIC_DATABASE_URL: str | None = None
     SECRET_KEY: str
     ALGORITHM: str
-    echo_sql: bool = False
+    ECHO_SQL: bool = False
     API_KEYS: str
     WANT_SINGLE_SIGNIN: bool
     BASE_URL: str

@@ -64,7 +64,7 @@ class DatabaseSessionManager:
             await session.close()
 
 
-sessionmanager = DatabaseSessionManager(DATABASE_URL, {"echo": settings.echo_sql})
+sessionmanager = DatabaseSessionManager(DATABASE_URL, {"echo": settings.ECHO_SQL})
 
 
 async def get_db_session():
