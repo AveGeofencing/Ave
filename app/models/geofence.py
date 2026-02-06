@@ -2,13 +2,15 @@ from datetime import datetime
 from zoneinfo import ZoneInfo
 from sqlalchemy import TIMESTAMP, ForeignKey, Integer, String, Float, DateTime, func
 from sqlalchemy.orm import relationship, Mapped, mapped_column
+
+from ..common import generate_id
 from ..database import Base
 
 
 class Geofence(Base):
     __tablename__ = "geofences"
 
-    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    id: Mapped[str] = mapped_column(String, primary_key=True, default=generate_id)
     fence_code: Mapped[str] = mapped_column(String(15), unique=True)
     name: Mapped[str] = mapped_column(String(60))
     latitude: Mapped[float] = mapped_column(Float)

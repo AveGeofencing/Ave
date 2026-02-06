@@ -1,12 +1,14 @@
 from sqlalchemy import Boolean, Column, Integer, String
 from sqlalchemy.orm import relationship, Mapped, mapped_column
+
+from ..common import generate_id
 from ..database import Base
 
 
 class User(Base):
     __tablename__ = "users"
 
-    id: Mapped[int] = mapped_column(Integer, autoincrement=True, primary_key=True)
+    id: Mapped[str] = mapped_column(String, primary_key=True, default=generate_id)
     user_matric: Mapped[str] = mapped_column(String(50), unique=True)
     email: Mapped[str] = mapped_column(String(60), unique=True)
     is_email_verified: Mapped[str] = mapped_column(Boolean(False))

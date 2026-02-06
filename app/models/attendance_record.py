@@ -1,19 +1,20 @@
 from datetime import datetime
 from sqlalchemy import (
-    TIMESTAMP,
     DateTime,
     ForeignKey,
     Integer,
     String,
 )
 from sqlalchemy.orm import mapped_column, Mapped, relationship
+
+from ..common import generate_id
 from ..database import Base
 
 
 class AttendanceRecord(Base):
     __tablename__ = "attendancerecords"
 
-    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    id: Mapped[str] = mapped_column(String, primary_key=True, default=generate_id)
     user_matric: Mapped[str] = mapped_column(
         String(50), ForeignKey("users.user_matric")
     )
