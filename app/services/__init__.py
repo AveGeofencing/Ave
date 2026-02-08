@@ -1,2 +1,2 @@
-from .UserService import UserService, get_user_service
-from .GeofenceService import GeofenceService, get_geofence_service
+from .user_service import UserService
+from .geofence_service import GeofenceService
