@@ -3,6 +3,7 @@ from .geofence import Geofence
 from .user import User
 from .password_reset_token import PasswordResetToken
 from ..database import Base
+from .used_password_reset_tokens import UsedPasswordResetToken
 
 __all__ = [
     "Base",
@@ -10,4 +11,5 @@ __all__ = [
     "Geofence",
     "AttendanceRecord",
     "PasswordResetToken",
+    "UsedPasswordResetToken"
 ]

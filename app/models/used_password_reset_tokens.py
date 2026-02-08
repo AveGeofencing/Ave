@@ -1,10 +1,10 @@
 from ..common import generate_id
 from ..database import Base
 from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy import String
 
-class VerificationCode(Base):
-    __tablename__ = "verificationcodes"
+class UsedPasswordResetToken(Base):
+    __tablename__ = "used_password_reset_tokens"
 
     id: Mapped[str] = mapped_column(primary_key=True, default=generate_id)
-    code: Mapped[str] = mapped_column(unique=True)
-    user_id: Mapped[str] = mapped_column(unique=True)
+    value: Mapped[str] = mapped_column(String, unique=True)
