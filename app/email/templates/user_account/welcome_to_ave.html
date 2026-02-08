@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block title %}Welcome to Ave{% endblock %}
+
+{% block header %}
+Welcome to Ave 🎉
+{% endblock %}
+
+{% block content %}
+<p>
+    Welcome aboard! We’re excited to have you on Ave Geofencing.
+</p>
+
+<p>
+    Your account has been successfully created, and you can now start
+    using our platform to manage attendance and location-based access
+    seamlessly.
+</p>
+
+{% if dashboard_link %}
+<a class="button" href="{{ dashboard_link }}">Go to Dashboard</a>
+{% endif %}
+
+<p>
+    If you have any questions or need help getting started, feel free to
+    reach out to our support team.
+</p>
+
+<p>
+    Once again, welcome — we’re glad you’re here!
+</p>
+{% endblock %}
