@@ -1,0 +1,56 @@
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile  # Dockerfile for FastAPI app
+    ports:
+      - "8000:8000"  # Expose FastAPI to port 8000
+    env_file:
+      - .env
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://admin:password@pg_db:5432/geofencedb
+      - REDIS_URL=redis://redis:6379/0
+    develop:
+      watch:
+        - action: sync+restart
+          path: .
+          target: /app
+
+    depends_on:
+      - redis  # Ensure Redis is up before FastAPI
+
+    volumes:
+        - uv_cache:/root/.cache/uv
+    networks:
+      - default  # Use the default network
+
+  redis:
+    image: redis:latest  # Using the official Redis image
+    ports:
+      - "6378:6379"  # Expose Redis to port 6378
+    networks:
+      - default  # Use the default network
+
+  pg_db:
+    image: postgres:latest
+    restart: always
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: geofencedb
+    ports:
+      - "5433:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - default
+
+  # Define volumes at the bottom
+volumes:
+  db_data:  # Named volume for MySQL
+  pgdata:
+  uv_cache:
+
+networks:
+  default:
+    driver: bridge
