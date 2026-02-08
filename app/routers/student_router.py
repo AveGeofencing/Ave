@@ -1,17 +1,17 @@
 from typing import Annotated, Optional
 from fastapi import APIRouter
 
-from ..services import UserService, get_user_service
+from ..services import UserService
 from fastapi import Depends
 from ..auth.sessions.sessionDependencies import authenticate_student_user
 
-StudentRouter = APIRouter(prefix="/user/student", tags=["Users/Student"])
+student_router = APIRouter(prefix="/user/student", tags=["Users/Student"])
 
 authenticate_student = Annotated[dict, Depends(authenticate_student_user)]
-UserServiceDependency = Annotated[UserService, Depends(get_user_service)]
+UserServiceDependency = Annotated[UserService, Depends()]
 
 
-@StudentRouter.get("/get_my_records")
+@student_router.get("/get_my_records")
 async def get_my_records(
     course_title: str | None,
     student: authenticate_student,
