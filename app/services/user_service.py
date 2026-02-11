@@ -1,5 +1,4 @@
 from typing import Annotated, Optional, Dict, Any
-from redis.asyncio import Redis
 from fastapi import BackgroundTasks, HTTPException, Depends
 from starlette import status
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -11,7 +10,6 @@ from ..email.types.no_reply import UserVerificationEmail, PasswordResetEmail
 from ..exceptions import InvalidTokenError
 from ..infra.token_utils import AccountVerificationToken, PasswordResetToken
 from ..models import User
-from ..redis import get_redis_client
 from ..email import send_email_task
 from ..repositories import UserRepository, UsedPasswordResetTokenRepo
 from ..schemas import UserCreateModel, UserOutputModel
@@ -28,7 +26,6 @@ class UserService:
         self,
         user_repository: Annotated[UserRepository, Depends()],
         used_reset_token_repo: Annotated[UsedPasswordResetTokenRepo, Depends()],
-        redis_client: Annotated[Redis, Depends(get_redis_client)],
         conn: Annotated[AsyncSession, Depends(get_db_session)],
         bg_tasks: BackgroundTasks,
     ):
@@ -36,7 +33,6 @@ class UserService:
 
         self.used_reset_token_repo = used_reset_token_repo
         self.bg_tasks = bg_tasks
-        self.redis_client: Redis = redis_client
         self.user_repository: UserRepository = user_repository
 
 
