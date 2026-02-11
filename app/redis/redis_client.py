@@ -1,8 +1,6 @@
 from typing import Optional
 from redis.asyncio import Redis
-from ..utils import get_app_settings
-
-settings = get_app_settings()
+from ..settings import APP_SETTINGS
 
 class RedisClient:
     _instance: Optional[Redis] = None
@@ -10,7 +8,7 @@ class RedisClient:
     @classmethod
     def get_instance(cls) -> Redis:
         if cls._instance is None:
-            cls._instance = Redis.from_url(settings.REDIS_URL, decode_responses=True)
+            cls._instance = Redis.from_url(APP_SETTINGS.REDIS_URL, decode_responses=True)
         return cls._instance
 
 
