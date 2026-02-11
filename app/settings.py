@@ -1,8 +1,6 @@
-import os
-from typing import Union
 from pydantic_settings import BaseSettings, SettingsConfigDict
-from pydantic import EmailStr
-
+from pydantic import EmailStr, SecretStr
+from fastapi_mail import ConnectionConfig
 
 class Settings(BaseSettings):
     DATABASE_URL: str
@@ -39,10 +37,18 @@ class EmailSettings(BaseSettings):
         env_file=".env", extra="ignore",
     )
 
+EMAIL_SETTINGS = EmailSettings()
 
-def get_email_settings():
-    return EmailSettings()
+email_config = ConnectionConfig(
+    MAIL_USERNAME=EMAIL_SETTINGS.MAIL_USERNAME,
+    MAIL_PASSWORD=SecretStr(EMAIL_SETTINGS.MAIL_PASSWORD),
+    MAIL_FROM=EMAIL_SETTINGS.MAIL_FROM,
+    MAIL_PORT=EMAIL_SETTINGS.MAIL_PORT,
+    MAIL_SERVER=EMAIL_SETTINGS.MAIL_SERVER,
+    MAIL_STARTTLS=EMAIL_SETTINGS.MAIL_STARTTLS,
+    MAIL_SSL_TLS=EMAIL_SETTINGS.MAIL_SSL_TLS,
+    USE_CREDENTIALS=EMAIL_SETTINGS.USE_CREDENTIALS,
+    VALIDATE_CERTS=EMAIL_SETTINGS.VALIDATE_CERTS,
+)
 
-
-def get_app_settings():
-    return Settings()
+APP_SETTINGS = Settings()
