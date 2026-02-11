@@ -1,28 +1,21 @@
-import random
 from typing import Annotated, Optional, Dict, Any
-
-
 from redis.asyncio import Redis
 from fastapi import BackgroundTasks, HTTPException, Depends
+from starlette import status
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from ..common import hash_password
 from ..database import get_db_session
 from ..email.types import WelcomeUserEmail, PasswordResetConfirmation
 from ..email.types.no_reply import UserVerificationEmail, PasswordResetEmail
 from ..exceptions import InvalidTokenError
-from ..infra.token_utils import AccessToken, AccountVerificationToken, PasswordResetToken
+from ..infra.token_utils import AccountVerificationToken, PasswordResetToken
 from ..models import User
-from ..models.used_password_reset_tokens import UsedPasswordResetToken
 from ..redis import get_redis_client
-from app.email import send_email_task
+from ..email import send_email_task
 from ..repositories import UserRepository, UsedPasswordResetTokenRepo
-from pydantic import EmailStr
 from ..schemas import UserCreateModel, UserOutputModel
-from starlette import status
-from sqlalchemy.ext.asyncio import AsyncSession
 from ..utils import (
-    PASSWORD_RESET_TOKEN_EXPIRY_MINUTES,
-    EMAIL_SUBJECTS,
     PASSWORD_MIN_LENGTH,
     logger
 )
@@ -39,10 +32,10 @@ class UserService:
         conn: Annotated[AsyncSession, Depends(get_db_session)],
         bg_tasks: BackgroundTasks,
     ):
-        self.used_reset_token_repo = used_reset_token_repo
-        self.conn = conn
-        self.bg_tasks = bg_tasks
+        self.conn = conn # Database connection
 
+        self.used_reset_token_repo = used_reset_token_repo
+        self.bg_tasks = bg_tasks
         self.redis_client: Redis = redis_client
         self.user_repository: UserRepository = user_repository
 
@@ -83,6 +76,8 @@ class UserService:
             recipients=[user.email],
         )
 
+        return {"message": f"Verification email sent to {user.email} successfully."}
+
     async def create_new_user(self, user_data: UserCreateModel) -> dict:
         """Create a new user account, create verification code, send verification code"""
         async with self.conn.begin():
@@ -121,7 +116,6 @@ class UserService:
             user: UserOutputModel = await AccountVerificationToken.decode(token)
         except InvalidTokenError:
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token")
-
 
         async with self.conn.begin():
             # if code exists, verify user
@@ -170,16 +164,13 @@ class UserService:
         self, user_matric: str, course_title: Optional[str] = None
     ) -> Dict[str, Any]:
         """Retrieve user attendance records, optionally filtered by course"""
-        user = await self.user_repository.get_user_by_email_or_matric(matric=user_matric)
+        user: User = await self.user_repository.get_user_by_email_or_matric(matric=user_matric, conn=self.conn)
 
         if not user:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail=f"User with matric {user_matric} not found"
             )
-
-        if not user.attendances:
-            return {"attendance": []}
 
         if course_title is None:
             return {"attendance": user.attendances}
