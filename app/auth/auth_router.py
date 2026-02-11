@@ -1,30 +1,23 @@
-import logging
 from fastapi.security import OAuth2PasswordRequestForm
 from fastapi import APIRouter, Depends, HTTPException, Request, Response
 from typing import Annotated
 
 from .sessions import SessionHandler, get_session_handler
-from .APIKeys import get_api_key
-from ..utils.config import get_app_settings
-
 from passlib.context import CryptContext
-
+from ..utils import logger
 
 AuthRouter = APIRouter(prefix="/auth", tags=["auth"])
 # Dependency
 password_request_form = Annotated[OAuth2PasswordRequestForm, Depends()]
-api_key_dependency = Annotated[str, Depends(get_api_key)]
 SessionHandlerDependency = Annotated[SessionHandler, Depends(get_session_handler)]
-settings = get_app_settings()
 
 bcrypt_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 SESSION_TIMEOUT_MINUTES = 24 * 60
 
-logger = logging.getLogger("uvicorn")
 
 
-@AuthRouter.post("/token", dependencies=[Depends(get_api_key)])
+@AuthRouter.post("/token")
 async def login(
     response: Response,
     form_data: password_request_form,
@@ -42,7 +35,6 @@ async def login(
         key="session_token",
         value=session_token,
         httponly=True,
-        # domain=settings.COOKIE_DOMAIN,
         secure=True,  # Set to True for HTTPS
         samesite="none",
         max_age=SESSION_TIMEOUT_MINUTES * 60,
