@@ -30,3 +30,6 @@ class VerificationCodeError(UserServiceException):
     """Raised when there is an issue with the verification code"""
 
     pass
+
+class InvalidTokenError(Exception):
+    pass

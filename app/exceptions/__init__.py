@@ -1,11 +1,12 @@
-from .UserExceptions import (
+from .user_exceptions import (
     TokenError,
     UserAlreadyExistsError,
     UserNotFoundError,
     VerificationCodeError,
     UserServiceException,
+    InvalidTokenError
 )
-from .GeofenceExceptions import (
+from .geofence_exceptions import (
     GeofenceServiceException,
     GeofenceAlreadyExistException,
     InvalidDurationException,
@@ -26,4 +27,5 @@ __all__ = [
     "GeofenceStatusException",
     "AlreadyRecordedAttendanceException",
     "UserNotInGeofenceException",
+    "InvalidTokenError"
 ]
