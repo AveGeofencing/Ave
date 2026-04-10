@@ -29,18 +29,19 @@ class UserRepository:
         )
         result = await conn.execute(stmt)
 
-        user: User = result.scalars().first()
+        user: User = result.scalar_one_or_none()
 
         return user
 
     @classmethod
-    async def create_new_user(cls, user: UserCreateModel, password_hash: str, conn: AsyncSession):
+    async def create_new_user(cls, user: UserCreateModel, conn: AsyncSession):
         new_user: User = User(
+            id=user.user_id,
             email=user.email,
             user_matric=user.user_matric,
             role=user.role,
             username=user.username,
-            hashed_password=password_hash,
+            hashed_password=user.password,
             is_email_verified=False
         )
 

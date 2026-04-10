@@ -2,6 +2,7 @@ from pydantic import BaseModel, ConfigDict, EmailStr
 
 
 class UserCreateModel(BaseModel):
+    user_id: str
     email: EmailStr
     username: str
     user_matric: str
