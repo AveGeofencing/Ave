@@ -22,7 +22,7 @@ class AttendanceRecord(Base):
         String(15), ForeignKey("geofences.fence_code")
     )
     geofence_name: Mapped[str] = mapped_column(String(60))
-    timestamp: Mapped[datetime] = mapped_column(DateTime)
+    timestamp: Mapped[datetime] = mapped_column(DateTime(timezone=True))
     matric_fence_code: Mapped[str] = mapped_column(String(60))
 
     user = relationship("User", back_populates="attendances")

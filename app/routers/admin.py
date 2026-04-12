@@ -2,7 +2,7 @@ from typing import Annotated
 from fastapi import APIRouter, Depends
 
 from ..services import UserService
-from ..auth.sessions.sessionDependencies import authenticate_admin_user
+from ..utils.security_dependencies import authenticate_admin_user
 
 admin_router = APIRouter(prefix="/user/admin", tags=["Users/Admin"])
 

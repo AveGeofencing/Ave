@@ -1,9 +1,13 @@
-from sqlalchemy import Boolean, Column, Integer, String
+from typing import TYPE_CHECKING
+
+from sqlalchemy import Boolean, String
 from sqlalchemy.orm import relationship, Mapped, mapped_column
 
 from ..common import generate_id
 from ..database import Base
 
+if TYPE_CHECKING:
+    from .refresh_tokens import Token
 
 class User(Base):
     __tablename__ = "users"

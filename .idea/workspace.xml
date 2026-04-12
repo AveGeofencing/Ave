@@ -4,38 +4,69 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="d4a0b043-94c4-44c5-a539-5ebed6fcad9c" name="Changes" comment="" />
+    <list default="true" id="0bc21ee9-1675-45ab-a3bd-2a6be0259344" name="Changes" comment="Refactor user management and enhance authentication flows&#10;&#10;Replaced deprecated database fetch methods and refined user creation logic. Added login and logout functionality with token handling, streamlined email verification, and improved password reset flow. This update ensures better modularity, security, and maintainability.">
+      <change afterPath="$PROJECT_DIR$/app/models/refresh_tokens.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/routers/auth.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/schemas/geofence.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/auth/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/utils/security_dependencies.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/auth/api_keys.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/auth/auth_router.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/auth/sessions/SessionHandler.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/auth/sessions/__init__.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/auth/sessions/sessionDependencies.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/common.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/common.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/infra/token_utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/infra/token_utils.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/models/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/models/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/models/attendance_record.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/models/attendance_record.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/models/geofence.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/models/geofence.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/models/user.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/models/user.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/redis/__init__.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/redis/redis_client.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/repositories/SessionRepository.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/repositories/SessionRepository.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/repositories/geofence_repository.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/repositories/geofence_repository.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/routers/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/routers/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/routers/admin_router.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/routers/admin.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/routers/general_user_router.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/routers/general_user.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/routers/geofence_router.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/routers/geofence.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/routers/student_router.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/routers/student.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/schemas/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/schemas/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/schemas/attendance_record_schema.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/schemas/attendance_record.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/schemas/geofence_schema.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/services/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/services/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/services/geofence_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/services/geofence.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/services/user_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/services/user.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/settings.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docker-compose.yml" beforeDir="false" afterPath="$PROJECT_DIR$/docker-compose.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/logs/app.log" beforeDir="false" afterPath="$PROJECT_DIR$/logs/app.log" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="Git.Settings">
-    <option name="RECENT_BRANCH_BY_REPOSITORY">
-      <map>
-        <entry key="$PROJECT_DIR$" value="main" />
-      </map>
-    </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="ProjectColorInfo">{
+  &quot;customColor&quot;: &quot;&quot;,
   &quot;associatedIndex&quot;: 0
 }</component>
-  <component name="ProjectId" id="2xRVIvNlCiwOztua22gw3WWUFEa" />
+  <component name="ProjectId" id="3C8k4y0xkRdfCH8iGwU2EaMjLWt" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "ModuleVcsDetector.initialDetectionPerformed": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "Rebasing main",
-    "last_opened_file_path": "C:/Users/Adedara/OneDrive/Personal Work/My Projects/Ave/ave_backend"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;dev&quot;
   }
-}]]></component>
+}</component>
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
@@ -45,12 +76,35 @@
   </component>
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
-      <changelist id="d4a0b043-94c4-44c5-a539-5ebed6fcad9c" name="Changes" comment="" />
-      <created>1747900796407</created>
+      <changelist id="0bc21ee9-1675-45ab-a3bd-2a6be0259344" name="Changes" comment="" />
+      <created>1775774398440</created>
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
-      <updated>1747900796407</updated>
+      <updated>1775774398440</updated>
     </task>
+    <task id="LOCAL-00001" summary="Remove foreign key from refresh_tokens table&#10;&#10;This migration drops the foreign key constraint `refresh_tokens_user_id_fkey` on the `refresh_tokens` table. The downgrade step restores the constraint with `CASCADE` rules for updates and deletes.">
+      <option name="closed" value="true" />
+      <created>1775817902788</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1775817902789</updated>
+    </task>
+    <task id="LOCAL-00002" summary="Refactor user management and enhance authentication flows&#10;&#10;Replaced deprecated database fetch methods and refined user creation logic. Added login and logout functionality with token handling, streamlined email verification, and improved password reset flow. This update ensures better modularity, security, and maintainability.">
+      <option name="closed" value="true" />
+      <created>1775817928253</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1775817928253</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="migra" />
+    <MESSAGE value="Remove foreign key from refresh_tokens table&#10;&#10;This migration drops the foreign key constraint `refresh_tokens_user_id_fkey` on the `refresh_tokens` table. The downgrade step restores the constraint with `CASCADE` rules for updates and deletes." />
+    <MESSAGE value="Refactor user management and enhance authentication flows&#10;&#10;Replaced deprecated database fetch methods and refined user creation logic. Added login and logout functionality with token handling, streamlined email verification, and improved password reset flow. This update ensures better modularity, security, and maintainability." />
+    <option name="LAST_COMMIT_MESSAGE" value="Refactor user management and enhance authentication flows&#10;&#10;Replaced deprecated database fetch methods and refined user creation logic. Added login and logout functionality with token handling, streamlined email verification, and improved password reset flow. This update ensures better modularity, security, and maintainability." />
   </component>
 </project>

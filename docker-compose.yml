@@ -9,7 +9,6 @@ services:
       - .env
     environment:
       - DATABASE_URL=postgresql+asyncpg://admin:password@pg_db:5432/geofencedb
-      - REDIS_URL=redis://redis:6379/0
     develop:
       watch:
         - action: sync+restart

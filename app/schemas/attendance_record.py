@@ -1,7 +1,10 @@
+from datetime import datetime
+
 from pydantic import BaseModel
 
 
 class AttendanceRecordModel(BaseModel):
+    geofence_id: str
     lat: float
     long: float
     fence_code: str
@@ -10,4 +13,4 @@ class AttendanceRecordModel(BaseModel):
 class AttendanceRecordOut(BaseModel):
     username: str
     user_matric: str
-    fence_code: str
+    timestamp: datetime

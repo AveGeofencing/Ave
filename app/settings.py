@@ -8,13 +8,9 @@ class Settings(BaseSettings):
     SECRET_KEY: str
     ALGORITHM: str
     ECHO_SQL: bool = False
-    API_KEYS: str
     WANT_SINGLE_SIGNIN: bool
     BASE_URL: str
     COOKIE_DOMAIN: str
-
-    # Redis config
-    REDIS_URL: str
 
     model_config = SettingsConfigDict(
         env_file=".env",

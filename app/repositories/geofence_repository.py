@@ -56,30 +56,27 @@ class GeofenceRepository:
 
     @classmethod
     async def get_all_geofences(cls, conn: AsyncSession):
-        stmt = select(Geofence)
+        stmt = select(Geofence).options(selectinload(Geofence.student_attendances))
         result = await conn.execute(stmt)
 
         geofences = result.scalars().all()
         return geofences
 
     @classmethod
-    async def get_all_geofences_by_user(cls, user_id: str, conn: AsyncSession):
-        stmt = select(Geofence).filter(Geofence.creator_matric == user_id)
+    async def get_all_geofences_by_user(cls, user_matric: str, conn: AsyncSession):
+        stmt = select(Geofence).filter(Geofence.creator_matric == user_matric)
         result = await conn.execute(stmt)
         geofence_by_user = result.scalars().all()
 
         return geofence_by_user
 
     @classmethod
-    async def get_geofence(cls, course_title: str, date: datetime, conn: AsyncSession) -> Geofence:
+    async def get_geofence(cls, geofence_id: str, conn: AsyncSession) -> Geofence:
         stmt = (
             select(Geofence)
             .options(selectinload(Geofence.student_attendances))
             .where(
-                and_(
-                    Geofence.name == course_title,
-                    func.date(Geofence.start_time) == date.date(),
-                )
+                Geofence.id == geofence_id
             )
         )
 
@@ -92,8 +89,8 @@ class GeofenceRepository:
     async def get_geofence_by_fence_code(cls, fence_code: str, conn: AsyncSession):
         stmt = (
             select(Geofence)
-            .options(selectinload(Geofence.student_attendances))
             .where(Geofence.fence_code == fence_code)
+            .options(selectinload(Geofence.student_attendances))
         )
         result = await conn.execute(stmt)
         geofence = result.scalars().one_or_none()
@@ -123,10 +120,13 @@ class GeofenceRepository:
 
     @classmethod
     async def get_attendance_record_for_student_for_geofence(
-        cls, matric_fence_code: str, conn: AsyncSession
+        cls, fence_code: str, user_matric: str, conn: AsyncSession
     ):
-        stmt = select(AttendanceRecord).filter(
-            AttendanceRecord.matric_fence_code == matric_fence_code
+        stmt = select(AttendanceRecord).where(
+            and_(
+                AttendanceRecord.fence_code == fence_code,
+                AttendanceRecord.user_matric == user_matric
+            )
         )
         result = await conn.execute(stmt)
         attendance_record = result.scalars().one_or_none()
@@ -134,9 +134,10 @@ class GeofenceRepository:
         return attendance_record
 
     @classmethod
-    async def deactivate_geofence(cls, geofence_code: str, conn: AsyncSession):
-        stmt = update(Geofence).where(Geofence.fence_code == geofence_code).values(status="inactive")
+    async def deactivate_geofence(cls, fence_id: str, conn: AsyncSession):
+        stmt = update(Geofence).where(Geofence.id == fence_id).values(status="inactive")
         await conn.execute(stmt)
+        await conn.flush()
 
 
     @classmethod
@@ -150,4 +151,11 @@ class GeofenceRepository:
 
         attendances = result.scalars().all()
         return attendances
+
+    @classmethod
+    async def get_geofence_by_id(cls, geofence_id: str, conn: AsyncSession):
+        stmt = select(Geofence).where(Geofence.id == geofence_id)
+        result = await conn.execute(stmt)
+        geofence = result.scalars().one_or_none()
+        return geofence
 

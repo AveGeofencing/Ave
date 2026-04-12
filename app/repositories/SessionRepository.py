@@ -9,6 +9,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from sqlalchemy.orm import selectinload
 
+
 DatabaseDependency = Annotated[AsyncSession, Depends(get_db_session)]
 
 """
@@ -16,15 +17,11 @@ Keeping this class in for backwards compatibility. I don't even know
 """
 
 class SessionRepository:
-    def __init__(self, db_session: AsyncSession):
-        self.db_session = db_session
-
-    async def get_user_by_email_or_matric(self, email: str = None, matric: str = None):
-        stmt = select(User).filter(or_(User.email == email, User.user_matric == matric))
-        result = await self.db_session.execute(stmt)
-        user = result.scalars().first()
-
-        return user
+    @classmethod
+    async def get_user_by_email_or_matric(cls, conn: AsyncSession, email: str = None, matric: str = None):
+        stmt = select(User).where(or_(User.email == email, User.user_matric == matric))
+        result = await conn.execute(stmt)
+        return result.scalars().first()
 
     # async def get_user_session_by_token(self, session_token):
     #     stmt = (

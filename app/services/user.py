@@ -1,6 +1,5 @@
 from typing import Annotated, Optional, Dict, Any
 from fastapi import BackgroundTasks, HTTPException, Depends
-from pydantic import with_config
 from starlette import status
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette.requests import Request
@@ -255,7 +254,7 @@ class UserService:
                 response=response,
                 key="refresh_token",
                 value=new_refresh_token,
-                path="/auth",
+                path="/",
                 max_age=60 * 60 * 24 * 7,
             )  # Set the refresh token in a cookie
 
@@ -284,3 +283,71 @@ class UserService:
             response.delete_cookie("refresh_token")
 
             return {"message": "Logged out successfully."}
+
+    async def refresh_token(self, request: Request, response: Response) -> dict:
+        """
+        Verify the provided refresh token, generate a new access token, and refresh token, and invalidate the old one.
+
+        Args:
+            response (Response): The FastAPI response object to set cookies.
+
+        Returns:
+            dict: A dictionary containing the new access token and its type.
+        """
+        async with self.conn.begin():
+            refresh_token = request.cookies.get("refresh_token")
+            if not refresh_token:
+                logger.debug("No refresh token was found in the user's client.")
+                raise HTTPException(
+                    status_code=status.HTTP_401_UNAUTHORIZED,
+                    detail="No refresh token provided"
+                )
+
+            try:
+                # Decode the refresh token to get the user ID
+                user_id: str = await RefreshToken.decode(
+                    conn=self.conn,
+                    token=refresh_token
+                )
+            except InvalidTokenError:
+                logger.debug("Invalid refresh token")
+                raise HTTPException(
+                    status_code=status.HTTP_401_UNAUTHORIZED,
+                    detail="Invalid or expired refresh token"
+                )
+
+            # Retrieve the user from the database
+            existing_user: User = await self.user_repository.get_user_by_id(conn=self.conn, user_id=user_id)
+            if not existing_user:
+                raise HTTPException(
+                    status_code=status.HTTP_404_NOT_FOUND, detail="User not found"
+                )
+
+            # Generate a new access token and refresh token
+            user_data = UserOutputModel(
+                user_id=existing_user.id,
+                username=existing_user.username,
+                email=existing_user.email,
+                user_matric=existing_user.user_matric,
+                role=existing_user.role,
+            )
+            new_access_token: str = await AccessToken.new(user_data)
+            new_refresh_token: str = await RefreshToken.new(
+                user_id=existing_user.id,
+                conn=self.conn,
+            )
+
+            # Set the new refresh token in the user’s cookies
+            set_custom_cookie(
+                response=response,
+                key="refresh_token",
+                value=new_refresh_token,
+                path="/",
+                max_age=60 * 60 * 24 * 7,  # 7 days
+            )
+
+            # Return the new access token to the client
+            return {
+                "access_token": new_access_token,
+                "token_type": "Bearer",
+            }

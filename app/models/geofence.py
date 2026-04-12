@@ -5,7 +5,10 @@ from sqlalchemy.orm import relationship, Mapped, mapped_column
 
 from ..common import generate_id
 from ..database import Base
+from typing import TYPE_CHECKING
 
+if TYPE_CHECKING:
+    from .attendance_record import AttendanceRecord
 
 class Geofence(Base):
     __tablename__ = "geofences"
@@ -17,8 +20,8 @@ class Geofence(Base):
     longitude: Mapped[float] = mapped_column(Float)
     radius: Mapped[float] = mapped_column(Float)
     fence_type: Mapped[str] = mapped_column(String(60))
-    start_time: Mapped[TIMESTAMP] = mapped_column(TIMESTAMP(timezone=True))
-    end_time: Mapped[TIMESTAMP] = mapped_column(TIMESTAMP(timezone=True))
+    start_time: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    end_time: Mapped[datetime] = mapped_column(DateTime(timezone=True))
     status: Mapped[str] = mapped_column(String(60))
     time_created: Mapped[TIMESTAMP] = mapped_column(
         TIMESTAMP(timezone=True), default=datetime.now(tz=ZoneInfo("UTC"))
@@ -28,4 +31,4 @@ class Geofence(Base):
     )
 
     creator = relationship("User", back_populates="geofences")
-    student_attendances = relationship("AttendanceRecord", back_populates="geofence")
+    student_attendances: Mapped[list["AttendanceRecord"]] = relationship("AttendanceRecord", back_populates="geofence")

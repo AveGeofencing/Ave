@@ -1,0 +1,291 @@
+INFO:     [2026-04-10 00:15:33]  [KJ-LOGGER] [email_sender.py:33] - Successfully sent email to ['courageadeara@gmail.com']
+INFO:     [2026-04-10 00:16:11]  [KJ-LOGGER] [email_sender.py:33] - Successfully sent email to ['courageadedara@gmail.com']
+INFO:     [2026-04-10 00:34:54]  [KJ-LOGGER] [email_sender.py:33] - Successfully sent email to ['courageadedara@gmail.com']
+INFO:     [2026-04-10 00:40:05]  [KJ-LOGGER] [email_sender.py:33] - Successfully sent email to ['courageadedara@gmail.com']
+INFO:     [2026-04-10 01:42:24]  [KJ-LOGGER] [email_sender.py:33] - Successfully sent email to ['courageadedara@gmail.com']
+INFO:     [2026-04-10 01:48:58]  [KJ-LOGGER] [email_sender.py:33] - Successfully sent email to ['courageadedara@gmail.com']
+INFO:     [2026-04-10 01:51:37]  [KJ-LOGGER] [email_sender.py:33] - Successfully sent email to ['courageadedara@gmail.com']
+INFO:     [2026-04-10 01:53:34]  [KJ-LOGGER] [email_sender.py:33] - Successfully sent email to ['courageadedara@gmail.com']
+INFO:     [2026-04-10 01:54:38]  [KJ-LOGGER] [email_sender.py:33] - Successfully sent email to ['courageadedara@gmail.com']
+INFO:     [2026-04-10 01:55:24]  [KJ-LOGGER] [email_sender.py:33] - Successfully sent email to ['courageadedara@gmail.com']
+INFO:     [2026-04-10 01:55:57]  [KJ-LOGGER] [email_sender.py:33] - Successfully sent email to ['courageadedara@gmail.com']
+ERROR:     [2026-04-10 02:09:43]  [KJ-LOGGER] [common.py:24] - Invalid Password: The password does not match the supplied hash
+ERROR:     [2026-04-10 02:09:47]  [KJ-LOGGER] [common.py:24] - Invalid Password: The password does not match the supplied hash
+INFO:     [2026-04-10 02:16:01]  [KJ-LOGGER] [email_sender.py:33] - Successfully sent email to ['courageadedara@gmail.com']
+DEBUG:     [2026-04-10 02:17:09]  [KJ-LOGGER] [user_repository.py:59] - Password changed for user courageadedara@gmail.com
+INFO:     [2026-04-10 02:17:29]  [KJ-LOGGER] [email_sender.py:33] - Successfully sent email to ['courageadedara@gmail.com']
+DEBUG:     [2026-04-10 11:12:18]  [KJ-LOGGER] [token_utils.py:90] - Token created in database
+DEBUG:     [2026-04-10 11:17:18]  [KJ-LOGGER] [token_utils.py:90] - Token created in database
+DEBUG:     [2026-04-10 11:20:15]  [KJ-LOGGER] [token_utils.py:90] - Token created in database
+DEBUG:     [2026-04-10 11:22:24]  [KJ-LOGGER] [token_utils.py:90] - Token created in database
+DEBUG:     [2026-04-10 11:23:55]  [KJ-LOGGER] [user_service.py:272] - No refresh token was found in the user's client.
+DEBUG:     [2026-04-10 11:26:52]  [KJ-LOGGER] [token_utils.py:90] - Token created in database
+DEBUG:     [2026-04-10 11:35:24]  [KJ-LOGGER] [token_utils.py:90] - Token created in database
+DEBUG:     [2026-04-10 11:42:09]  [KJ-LOGGER] [user_service.py:280] - Token wasn't deleted
+DEBUG:     [2026-04-10 11:43:09]  [KJ-LOGGER] [token_utils.py:90] - Token created in database
+DEBUG:     [2026-04-10 11:43:11]  [KJ-LOGGER] [token_utils.py:106] - Token revoked: 95068f7d-9103-4032-a1d6-a570ecf43b75
+DEBUG:     [2026-04-10 11:43:30]  [KJ-LOGGER] [token_utils.py:106] - Token revoked: 95068f7d-9103-4032-a1d6-a570ecf43b75
+DEBUG:     [2026-04-10 11:44:29]  [KJ-LOGGER] [token_utils.py:90] - Token created in database
+DEBUG:     [2026-04-10 11:44:32]  [KJ-LOGGER] [token_utils.py:106] - Token revoked: b5c711de-6528-42a3-9fb7-63377e637440
+DEBUG:     [2026-04-10 12:06:55]  [KJ-LOGGER] [token_utils.py:90] - Token created in database
+DEBUG:     [2026-04-10 12:07:35]  [KJ-LOGGER] [token_utils.py:90] - Token created in database
+DEBUG:     [2026-04-10 12:07:51]  [KJ-LOGGER] [token_utils.py:90] - Token created in database
+DEBUG:     [2026-04-10 12:12:14]  [KJ-LOGGER] [token_utils.py:90] - Token created in database
+DEBUG:     [2026-04-10 12:14:33]  [KJ-LOGGER] [token_utils.py:90] - Token created in database
+DEBUG:     [2026-04-10 12:15:50]  [KJ-LOGGER] [token_utils.py:90] - Token created in database
+DEBUG:     [2026-04-10 12:18:59]  [KJ-LOGGER] [token_utils.py:90] - Token created in database
+DEBUG:     [2026-04-10 12:20:56]  [KJ-LOGGER] [token_utils.py:90] - Token created in database
+DEBUG:     [2026-04-10 13:40:10]  [KJ-LOGGER] [token_utils.py:90] - Token created in database
+DEBUG:     [2026-04-10 13:45:22]  [KJ-LOGGER] [token_utils.py:106] - Token revoked: e6b5e77c-6d80-4d1f-8943-7c57abac1a7d
+DEBUG:     [2026-04-10 14:03:03]  [KJ-LOGGER] [token_utils.py:90] - Token created in database
+DEBUG:     [2026-04-10 14:05:34]  [KJ-LOGGER] [token_utils.py:90] - Token created in database
+DEBUG:     [2026-04-10 14:05:48]  [KJ-LOGGER] [user_service.py:281] - Token wasn't deleted
+DEBUG:     [2026-04-10 14:05:51]  [KJ-LOGGER] [token_utils.py:90] - Token created in database
+DEBUG:     [2026-04-10 14:06:07]  [KJ-LOGGER] [user_service.py:281] - Token wasn't deleted
+DEBUG:     [2026-04-10 14:06:12]  [KJ-LOGGER] [token_utils.py:90] - Token created in database
+DEBUG:     [2026-04-10 14:06:19]  [KJ-LOGGER] [token_utils.py:90] - Token created in database
+DEBUG:     [2026-04-10 14:06:52]  [KJ-LOGGER] [token_utils.py:90] - Token created in database
+DEBUG:     [2026-04-10 14:10:03]  [KJ-LOGGER] [token_utils.py:90] - Token created in database
+DEBUG:     [2026-04-10 14:28:39]  [KJ-LOGGER] [token_utils.py:90] - Token created in database
+DEBUG:     [2026-04-10 14:32:25]  [KJ-LOGGER] [token_utils.py:90] - Token created in database
+DEBUG:     [2026-04-10 15:25:31]  [KJ-LOGGER] [token_utils.py:90] - Token created in database
+DEBUG:     [2026-04-10 15:26:12]  [KJ-LOGGER] [token_utils.py:90] - Token created in database
+DEBUG:     [2026-04-10 15:27:25]  [KJ-LOGGER] [token_utils.py:90] - Token created in database
+DEBUG:     [2026-04-10 15:27:31]  [KJ-LOGGER] [token_utils.py:90] - Token created in database
+DEBUG:     [2026-04-10 15:27:37]  [KJ-LOGGER] [token_utils.py:90] - Token created in database
+DEBUG:     [2026-04-10 15:28:45]  [KJ-LOGGER] [token_utils.py:90] - Token created in database
+DEBUG:     [2026-04-10 15:28:54]  [KJ-LOGGER] [token_utils.py:90] - Token created in database
+DEBUG:     [2026-04-10 15:30:20]  [KJ-LOGGER] [token_utils.py:90] - Token created in database
+DEBUG:     [2026-04-10 15:38:15]  [KJ-LOGGER] [user_service.py:273] - No refresh token was found in the user's client.
+DEBUG:     [2026-04-10 15:38:18]  [KJ-LOGGER] [token_utils.py:90] - Token created in database
+DEBUG:     [2026-04-10 16:24:47]  [KJ-LOGGER] [token_utils.py:90] - Token created in database
+DEBUG:     [2026-04-10 17:42:19]  [KJ-LOGGER] [user_service.py:273] - No refresh token was found in the user's client.
+DEBUG:     [2026-04-10 17:42:28]  [KJ-LOGGER] [token_utils.py:90] - Token created in database
+DEBUG:     [2026-04-10 17:45:59]  [KJ-LOGGER] [user_service.py:273] - No refresh token was found in the user's client.
+DEBUG:     [2026-04-10 17:46:04]  [KJ-LOGGER] [token_utils.py:90] - Token created in database
+DEBUG:     [2026-04-10 17:56:27]  [KJ-LOGGER] [user_service.py:273] - No refresh token was found in the user's client.
+INFO:     [2026-04-10 17:57:04]  [KJ-LOGGER] [email_sender.py:33] - Successfully sent email to ['adedaraadeloro2602@gmail.com']
+INFO:     [2026-04-10 17:57:05]  [KJ-LOGGER] [email_sender.py:33] - Successfully sent email to ['adedaraadeloro2602@gmail.com']
+INFO:     [2026-04-10 17:58:55]  [KJ-LOGGER] [email_sender.py:33] - Successfully sent email to ['adedaraadeloro2602@gmail.com']
+ERROR:     [2026-04-10 18:00:42]  [KJ-LOGGER] [email_sender.py:90] - Error occurred while sending email to user: 1 validation error for MessageSchema
+recipients.0
+  value is not a valid email address: An email address must have an @-sign. [type=value_error, input_value='${email}', input_type=str]
+INFO:     [2026-04-10 18:03:08]  [KJ-LOGGER] [email_sender.py:33] - Successfully sent email to ['adedaraadeloro2602@gmail.com']
+DEBUG:     [2026-04-10 18:03:44]  [KJ-LOGGER] [token_utils.py:90] - Token created in database
+DEBUG:     [2026-04-10 18:04:19]  [KJ-LOGGER] [token_utils.py:90] - Token created in database
+ERROR:     [2026-04-10 18:08:00]  [KJ-LOGGER] [common.py:26] - Invalid Password: The password does not match the supplied hash
+DEBUG:     [2026-04-10 18:08:09]  [KJ-LOGGER] [token_utils.py:90] - Token created in database
+ERROR:     [2026-04-10 18:14:35]  [KJ-LOGGER] [common.py:26] - Invalid Password: The password does not match the supplied hash
+DEBUG:     [2026-04-10 18:14:39]  [KJ-LOGGER] [token_utils.py:90] - Token created in database
+DEBUG:     [2026-04-10 18:17:50]  [KJ-LOGGER] [token_utils.py:90] - Token created in database
+DEBUG:     [2026-04-10 18:19:53]  [KJ-LOGGER] [user_service.py:273] - No refresh token was found in the user's client.
+DEBUG:     [2026-04-10 18:19:57]  [KJ-LOGGER] [token_utils.py:90] - Token created in database
+DEBUG:     [2026-04-10 19:11:13]  [KJ-LOGGER] [token_utils.py:90] - Token created in database
+DEBUG:     [2026-04-10 20:11:35]  [KJ-LOGGER] [user_service.py:273] - No refresh token was found in the user's client.
+DEBUG:     [2026-04-10 20:11:40]  [KJ-LOGGER] [token_utils.py:90] - Token created in database
+DEBUG:     [2026-04-10 23:06:31]  [KJ-LOGGER] [user_service.py:273] - No refresh token was found in the user's client.
+DEBUG:     [2026-04-10 23:08:01]  [KJ-LOGGER] [token_utils.py:90] - Token created in database
+DEBUG:     [2026-04-10 23:08:16]  [KJ-LOGGER] [user_service.py:273] - No refresh token was found in the user's client.
+DEBUG:     [2026-04-10 23:08:20]  [KJ-LOGGER] [token_utils.py:90] - Token created in database
+DEBUG:     [2026-04-10 23:08:23]  [KJ-LOGGER] [user_service.py:273] - No refresh token was found in the user's client.
+DEBUG:     [2026-04-10 23:09:19]  [KJ-LOGGER] [user_service.py:273] - No refresh token was found in the user's client.
+ERROR:     [2026-04-10 23:11:02]  [KJ-LOGGER] [common.py:26] - Invalid Password: The password does not match the supplied hash
+DEBUG:     [2026-04-10 23:11:12]  [KJ-LOGGER] [token_utils.py:90] - Token created in database
+DEBUG:     [2026-04-10 23:11:15]  [KJ-LOGGER] [user_service.py:273] - No refresh token was found in the user's client.
+DEBUG:     [2026-04-10 23:11:20]  [KJ-LOGGER] [token_utils.py:90] - Token created in database
+DEBUG:     [2026-04-11 16:58:46]  [KJ-LOGGER] [token_utils.py:90] - Token created in database
+DEBUG:     [2026-04-11 20:22:02]  [KJ-LOGGER] [user_service.py:273] - No refresh token was found in the user's client.
+DEBUG:     [2026-04-11 20:22:10]  [KJ-LOGGER] [token_utils.py:90] - Token created in database
+DEBUG:     [2026-04-11 20:42:21]  [KJ-LOGGER] [token_utils.py:90] - Token created in database
+DEBUG:     [2026-04-11 20:45:59]  [KJ-LOGGER] [token_utils.py:90] - Token created in database
+DEBUG:     [2026-04-11 21:47:32]  [KJ-LOGGER] [token_utils.py:90] - Token created in database
+DEBUG:     [2026-04-11 21:47:46]  [KJ-LOGGER] [user_service.py:301] - No refresh token was found in the user's client.
+DEBUG:     [2026-04-11 21:48:00]  [KJ-LOGGER] [token_utils.py:90] - Token created in database
+DEBUG:     [2026-04-11 21:48:46]  [KJ-LOGGER] [user_service.py:301] - No refresh token was found in the user's client.
+DEBUG:     [2026-04-11 21:49:41]  [KJ-LOGGER] [token_utils.py:90] - Token created in database
+DEBUG:     [2026-04-11 21:49:49]  [KJ-LOGGER] [user_service.py:303] - No refresh token was found in the user's client.
+DEBUG:     [2026-04-11 21:52:28]  [KJ-LOGGER] [token_utils.py:90] - Token created in database
+DEBUG:     [2026-04-11 21:52:44]  [KJ-LOGGER] [token_utils.py:106] - Token revoked: 732cd2a7-d661-420d-80f3-771252c14229
+DEBUG:     [2026-04-11 21:54:32]  [KJ-LOGGER] [token_utils.py:90] - Token created in database
+DEBUG:     [2026-04-11 21:54:49]  [KJ-LOGGER] [token_utils.py:106] - Token revoked: e80e04c7-3630-47df-9e3d-f7af5b701162
+DEBUG:     [2026-04-11 21:54:49]  [KJ-LOGGER] [token_utils.py:90] - Token created in database
+DEBUG:     [2026-04-11 21:55:04]  [KJ-LOGGER] [token_utils.py:106] - Token revoked: 6e16d47d-a9e4-4a57-b3be-c1f808b4189d
+DEBUG:     [2026-04-11 21:55:04]  [KJ-LOGGER] [token_utils.py:90] - Token created in database
+DEBUG:     [2026-04-11 21:55:59]  [KJ-LOGGER] [token_utils.py:106] - Token revoked: ddec253f-82b3-401d-94db-71e89c1e776b
+DEBUG:     [2026-04-11 21:57:01]  [KJ-LOGGER] [token_utils.py:90] - Token created in database
+DEBUG:     [2026-04-11 21:57:07]  [KJ-LOGGER] [token_utils.py:106] - Token revoked: 1b5c9acf-ffd4-4d80-a484-6f8c59791d68
+DEBUG:     [2026-04-11 21:58:43]  [KJ-LOGGER] [user_service.py:273] - No refresh token was found in the user's client.
+DEBUG:     [2026-04-11 22:22:24]  [KJ-LOGGER] [token_utils.py:90] - Token created in database
+DEBUG:     [2026-04-11 22:29:30]  [KJ-LOGGER] [token_utils.py:90] - Token created in database
+DEBUG:     [2026-04-11 22:31:56]  [KJ-LOGGER] [token_utils.py:90] - Token created in database
+DEBUG:     [2026-04-11 22:45:24]  [KJ-LOGGER] [token_utils.py:106] - Token revoked: 7201ca80-240a-46c9-a84f-83e16bb463c3
+DEBUG:     [2026-04-11 22:45:27]  [KJ-LOGGER] [token_utils.py:90] - Token created in database
+DEBUG:     [2026-04-11 23:18:19]  [KJ-LOGGER] [token_utils.py:90] - Token created in database
+DEBUG:     [2026-04-12 00:23:54]  [KJ-LOGGER] [token_utils.py:106] - Token revoked: 5555455e-5a08-4799-a50e-b4c52fe6f8a2
+DEBUG:     [2026-04-12 00:23:55]  [KJ-LOGGER] [token_utils.py:90] - Token created in database
+DEBUG:     [2026-04-12 00:49:47]  [KJ-LOGGER] [token_utils.py:106] - Token revoked: 387e3789-d97f-46dd-9ff8-46a6e35fc773
+DEBUG:     [2026-04-12 00:49:53]  [KJ-LOGGER] [token_utils.py:90] - Token created in database
+DEBUG:     [2026-04-12 00:50:26]  [KJ-LOGGER] [token_utils.py:90] - Token created in database
+DEBUG:     [2026-04-12 00:51:28]  [KJ-LOGGER] [token_utils.py:106] - Token revoked: fa92a7a5-a3fa-486a-9ecf-ba6d9c831fa4
+DEBUG:     [2026-04-12 00:51:31]  [KJ-LOGGER] [token_utils.py:90] - Token created in database
+DEBUG:     [2026-04-12 00:51:40]  [KJ-LOGGER] [token_utils.py:106] - Token revoked: f8fb3776-62e8-4459-b7f7-65d0bae33991
+DEBUG:     [2026-04-12 00:52:37]  [KJ-LOGGER] [token_utils.py:90] - Token created in database
+DEBUG:     [2026-04-12 00:52:49]  [KJ-LOGGER] [token_utils.py:90] - Token created in database
+DEBUG:     [2026-04-12 00:52:56]  [KJ-LOGGER] [token_utils.py:90] - Token created in database
+DEBUG:     [2026-04-12 00:53:58]  [KJ-LOGGER] [token_utils.py:106] - Token revoked: 04983961-805f-4b4f-93a2-e3aeec40f4ae
+DEBUG:     [2026-04-12 00:53:58]  [KJ-LOGGER] [token_utils.py:90] - Token created in database
+DEBUG:     [2026-04-12 00:54:06]  [KJ-LOGGER] [token_utils.py:106] - Token revoked: 6f194402-bbcb-4c2a-9ec6-c40124bdf920
+DEBUG:     [2026-04-12 00:54:06]  [KJ-LOGGER] [token_utils.py:90] - Token created in database
+DEBUG:     [2026-04-12 01:01:58]  [KJ-LOGGER] [token_utils.py:106] - Token revoked: 93d0a6e6-7e51-4ba3-a5f6-8aaeb38628dc
+DEBUG:     [2026-04-12 01:01:58]  [KJ-LOGGER] [token_utils.py:90] - Token created in database
+DEBUG:     [2026-04-12 01:09:46]  [KJ-LOGGER] [token_utils.py:106] - Token revoked: b094e43a-4389-4948-9617-818252c264b7
+DEBUG:     [2026-04-12 01:09:47]  [KJ-LOGGER] [user_service.py:301] - No refresh token was found in the user's client.
+DEBUG:     [2026-04-12 01:09:47]  [KJ-LOGGER] [user_service.py:301] - No refresh token was found in the user's client.
+DEBUG:     [2026-04-12 01:09:48]  [KJ-LOGGER] [user_service.py:301] - No refresh token was found in the user's client.
+DEBUG:     [2026-04-12 01:09:50]  [KJ-LOGGER] [user_service.py:301] - No refresh token was found in the user's client.
+DEBUG:     [2026-04-12 01:09:51]  [KJ-LOGGER] [user_service.py:301] - No refresh token was found in the user's client.
+DEBUG:     [2026-04-12 01:09:52]  [KJ-LOGGER] [user_service.py:301] - No refresh token was found in the user's client.
+DEBUG:     [2026-04-12 01:09:53]  [KJ-LOGGER] [user_service.py:301] - No refresh token was found in the user's client.
+DEBUG:     [2026-04-12 01:09:55]  [KJ-LOGGER] [user_service.py:301] - No refresh token was found in the user's client.
+DEBUG:     [2026-04-12 01:09:56]  [KJ-LOGGER] [user_service.py:301] - No refresh token was found in the user's client.
+DEBUG:     [2026-04-12 01:09:58]  [KJ-LOGGER] [user_service.py:301] - No refresh token was found in the user's client.
+DEBUG:     [2026-04-12 01:10:00]  [KJ-LOGGER] [user_service.py:301] - No refresh token was found in the user's client.
+DEBUG:     [2026-04-12 01:10:01]  [KJ-LOGGER] [user_service.py:301] - No refresh token was found in the user's client.
+DEBUG:     [2026-04-12 01:10:05]  [KJ-LOGGER] [user_service.py:301] - No refresh token was found in the user's client.
+DEBUG:     [2026-04-12 01:11:53]  [KJ-LOGGER] [user_service.py:301] - No refresh token was found in the user's client.
+DEBUG:     [2026-04-12 01:11:53]  [KJ-LOGGER] [user_service.py:301] - No refresh token was found in the user's client.
+DEBUG:     [2026-04-12 01:11:55]  [KJ-LOGGER] [user_service.py:301] - No refresh token was found in the user's client.
+DEBUG:     [2026-04-12 01:11:56]  [KJ-LOGGER] [user_service.py:301] - No refresh token was found in the user's client.
+DEBUG:     [2026-04-12 01:11:59]  [KJ-LOGGER] [user_service.py:301] - No refresh token was found in the user's client.
+DEBUG:     [2026-04-12 01:12:00]  [KJ-LOGGER] [user_service.py:301] - No refresh token was found in the user's client.
+DEBUG:     [2026-04-12 01:12:03]  [KJ-LOGGER] [user_service.py:301] - No refresh token was found in the user's client.
+DEBUG:     [2026-04-12 01:12:05]  [KJ-LOGGER] [user_service.py:301] - No refresh token was found in the user's client.
+DEBUG:     [2026-04-12 01:12:08]  [KJ-LOGGER] [user_service.py:301] - No refresh token was found in the user's client.
+DEBUG:     [2026-04-12 01:12:11]  [KJ-LOGGER] [user_service.py:301] - No refresh token was found in the user's client.
+DEBUG:     [2026-04-12 01:12:13]  [KJ-LOGGER] [user_service.py:301] - No refresh token was found in the user's client.
+DEBUG:     [2026-04-12 01:12:16]  [KJ-LOGGER] [user_service.py:301] - No refresh token was found in the user's client.
+DEBUG:     [2026-04-12 01:12:19]  [KJ-LOGGER] [user_service.py:301] - No refresh token was found in the user's client.
+DEBUG:     [2026-04-12 01:17:34]  [KJ-LOGGER] [user_service.py:301] - No refresh token was found in the user's client.
+DEBUG:     [2026-04-12 01:17:39]  [KJ-LOGGER] [user_service.py:301] - No refresh token was found in the user's client.
+DEBUG:     [2026-04-12 01:17:40]  [KJ-LOGGER] [user_service.py:301] - No refresh token was found in the user's client.
+DEBUG:     [2026-04-12 01:17:43]  [KJ-LOGGER] [user_service.py:301] - No refresh token was found in the user's client.
+DEBUG:     [2026-04-12 01:17:45]  [KJ-LOGGER] [user_service.py:301] - No refresh token was found in the user's client.
+DEBUG:     [2026-04-12 01:17:46]  [KJ-LOGGER] [user_service.py:301] - No refresh token was found in the user's client.
+DEBUG:     [2026-04-12 01:17:48]  [KJ-LOGGER] [user_service.py:301] - No refresh token was found in the user's client.
+DEBUG:     [2026-04-12 01:17:50]  [KJ-LOGGER] [user_service.py:301] - No refresh token was found in the user's client.
+DEBUG:     [2026-04-12 01:17:51]  [KJ-LOGGER] [user_service.py:301] - No refresh token was found in the user's client.
+DEBUG:     [2026-04-12 01:17:53]  [KJ-LOGGER] [user_service.py:301] - No refresh token was found in the user's client.
+DEBUG:     [2026-04-12 01:17:55]  [KJ-LOGGER] [user_service.py:301] - No refresh token was found in the user's client.
+DEBUG:     [2026-04-12 01:17:56]  [KJ-LOGGER] [user_service.py:301] - No refresh token was found in the user's client.
+DEBUG:     [2026-04-12 01:19:05]  [KJ-LOGGER] [user_service.py:301] - No refresh token was found in the user's client.
+DEBUG:     [2026-04-12 01:19:08]  [KJ-LOGGER] [user_service.py:301] - No refresh token was found in the user's client.
+DEBUG:     [2026-04-12 01:19:09]  [KJ-LOGGER] [user_service.py:301] - No refresh token was found in the user's client.
+DEBUG:     [2026-04-12 01:19:11]  [KJ-LOGGER] [user_service.py:301] - No refresh token was found in the user's client.
+DEBUG:     [2026-04-12 01:19:13]  [KJ-LOGGER] [user_service.py:301] - No refresh token was found in the user's client.
+DEBUG:     [2026-04-12 01:19:15]  [KJ-LOGGER] [user_service.py:301] - No refresh token was found in the user's client.
+DEBUG:     [2026-04-12 01:19:18]  [KJ-LOGGER] [user_service.py:301] - No refresh token was found in the user's client.
+DEBUG:     [2026-04-12 01:20:05]  [KJ-LOGGER] [user_service.py:301] - No refresh token was found in the user's client.
+DEBUG:     [2026-04-12 01:20:06]  [KJ-LOGGER] [user_service.py:301] - No refresh token was found in the user's client.
+DEBUG:     [2026-04-12 01:20:08]  [KJ-LOGGER] [user_service.py:301] - No refresh token was found in the user's client.
+DEBUG:     [2026-04-12 01:20:10]  [KJ-LOGGER] [user_service.py:301] - No refresh token was found in the user's client.
+DEBUG:     [2026-04-12 01:21:00]  [KJ-LOGGER] [user_service.py:301] - No refresh token was found in the user's client.
+DEBUG:     [2026-04-12 01:21:15]  [KJ-LOGGER] [user_service.py:301] - No refresh token was found in the user's client.
+DEBUG:     [2026-04-12 01:21:17]  [KJ-LOGGER] [user_service.py:301] - No refresh token was found in the user's client.
+DEBUG:     [2026-04-12 01:21:18]  [KJ-LOGGER] [user_service.py:301] - No refresh token was found in the user's client.
+DEBUG:     [2026-04-12 01:21:20]  [KJ-LOGGER] [user_service.py:301] - No refresh token was found in the user's client.
+DEBUG:     [2026-04-12 01:26:28]  [KJ-LOGGER] [user_service.py:301] - No refresh token was found in the user's client.
+DEBUG:     [2026-04-12 01:26:31]  [KJ-LOGGER] [user_service.py:301] - No refresh token was found in the user's client.
+DEBUG:     [2026-04-12 01:27:59]  [KJ-LOGGER] [user_service.py:301] - No refresh token was found in the user's client.
+DEBUG:     [2026-04-12 01:28:01]  [KJ-LOGGER] [user_service.py:301] - No refresh token was found in the user's client.
+DEBUG:     [2026-04-12 01:28:03]  [KJ-LOGGER] [user_service.py:301] - No refresh token was found in the user's client.
+DEBUG:     [2026-04-12 01:28:04]  [KJ-LOGGER] [user_service.py:301] - No refresh token was found in the user's client.
+DEBUG:     [2026-04-12 01:28:06]  [KJ-LOGGER] [user_service.py:301] - No refresh token was found in the user's client.
+DEBUG:     [2026-04-12 01:28:08]  [KJ-LOGGER] [user_service.py:301] - No refresh token was found in the user's client.
+DEBUG:     [2026-04-12 01:28:10]  [KJ-LOGGER] [user_service.py:301] - No refresh token was found in the user's client.
+DEBUG:     [2026-04-12 01:28:11]  [KJ-LOGGER] [user_service.py:301] - No refresh token was found in the user's client.
+DEBUG:     [2026-04-12 01:28:14]  [KJ-LOGGER] [user_service.py:301] - No refresh token was found in the user's client.
+DEBUG:     [2026-04-12 01:29:44]  [KJ-LOGGER] [user_service.py:301] - No refresh token was found in the user's client.
+ERROR:     [2026-04-12 01:30:09]  [KJ-LOGGER] [common.py:26] - Invalid Password: The password does not match the supplied hash
+DEBUG:     [2026-04-12 01:30:09]  [KJ-LOGGER] [user_service.py:301] - No refresh token was found in the user's client.
+ERROR:     [2026-04-12 01:30:49]  [KJ-LOGGER] [common.py:26] - Invalid Password: The password does not match the supplied hash
+DEBUG:     [2026-04-12 01:30:49]  [KJ-LOGGER] [user_service.py:301] - No refresh token was found in the user's client.
+ERROR:     [2026-04-12 01:33:29]  [KJ-LOGGER] [common.py:26] - Invalid Password: The password does not match the supplied hash
+ERROR:     [2026-04-12 01:34:14]  [KJ-LOGGER] [common.py:26] - Invalid Password: The password does not match the supplied hash
+ERROR:     [2026-04-12 01:35:01]  [KJ-LOGGER] [common.py:26] - Invalid Password: The password does not match the supplied hash
+ERROR:     [2026-04-12 01:35:07]  [KJ-LOGGER] [common.py:26] - Invalid Password: The password does not match the supplied hash
+ERROR:     [2026-04-12 01:35:12]  [KJ-LOGGER] [common.py:26] - Invalid Password: The password does not match the supplied hash
+ERROR:     [2026-04-12 01:35:21]  [KJ-LOGGER] [common.py:26] - Invalid Password: The password does not match the supplied hash
+DEBUG:     [2026-04-12 01:35:27]  [KJ-LOGGER] [token_utils.py:90] - Token created in database
+DEBUG:     [2026-04-12 01:35:48]  [KJ-LOGGER] [token_utils.py:106] - Token revoked: e5956ad8-1ee2-42d9-b5bb-72b6c66f233f
+DEBUG:     [2026-04-12 01:35:49]  [KJ-LOGGER] [token_utils.py:90] - Token created in database
+DEBUG:     [2026-04-12 01:36:23]  [KJ-LOGGER] [user_service.py:301] - No refresh token was found in the user's client.
+DEBUG:     [2026-04-12 01:36:43]  [KJ-LOGGER] [token_utils.py:90] - Token created in database
+DEBUG:     [2026-04-12 01:36:47]  [KJ-LOGGER] [token_utils.py:106] - Token revoked: adc64ce6-e8f2-428d-932d-d85777bf9bb0
+DEBUG:     [2026-04-12 01:36:47]  [KJ-LOGGER] [token_utils.py:90] - Token created in database
+DEBUG:     [2026-04-12 01:36:56]  [KJ-LOGGER] [user_service.py:314] - Invalid refresh token
+DEBUG:     [2026-04-12 01:37:04]  [KJ-LOGGER] [user_service.py:314] - Invalid refresh token
+DEBUG:     [2026-04-12 01:37:28]  [KJ-LOGGER] [token_utils.py:90] - Token created in database
+DEBUG:     [2026-04-12 01:37:35]  [KJ-LOGGER] [token_utils.py:106] - Token revoked: 560bdf0c-31b4-4116-a839-52449e238311
+DEBUG:     [2026-04-12 01:37:35]  [KJ-LOGGER] [token_utils.py:90] - Token created in database
+DEBUG:     [2026-04-12 01:39:14]  [KJ-LOGGER] [token_utils.py:106] - Token revoked: 9fa85d64-c6bd-4693-916e-b0f13a227aa2
+DEBUG:     [2026-04-12 01:39:14]  [KJ-LOGGER] [user_service.py:301] - No refresh token was found in the user's client.
+DEBUG:     [2026-04-12 01:39:14]  [KJ-LOGGER] [user_service.py:301] - No refresh token was found in the user's client.
+DEBUG:     [2026-04-12 01:39:22]  [KJ-LOGGER] [token_utils.py:90] - Token created in database
+DEBUG:     [2026-04-12 01:39:40]  [KJ-LOGGER] [token_utils.py:106] - Token revoked: 5af74b6d-4854-40f9-a9c2-05c0f65c86df
+DEBUG:     [2026-04-12 01:39:41]  [KJ-LOGGER] [user_service.py:301] - No refresh token was found in the user's client.
+DEBUG:     [2026-04-12 01:39:41]  [KJ-LOGGER] [user_service.py:301] - No refresh token was found in the user's client.
+DEBUG:     [2026-04-12 01:39:51]  [KJ-LOGGER] [token_utils.py:90] - Token created in database
+DEBUG:     [2026-04-12 01:41:47]  [KJ-LOGGER] [token_utils.py:90] - Token created in database
+DEBUG:     [2026-04-12 01:42:15]  [KJ-LOGGER] [token_utils.py:106] - Token revoked: d45a5ceb-a1e0-4c86-a5f4-c20a76da2395
+DEBUG:     [2026-04-12 01:42:16]  [KJ-LOGGER] [user_service.py:301] - No refresh token was found in the user's client.
+DEBUG:     [2026-04-12 01:42:16]  [KJ-LOGGER] [user_service.py:301] - No refresh token was found in the user's client.
+DEBUG:     [2026-04-12 01:43:24]  [KJ-LOGGER] [token_utils.py:90] - Token created in database
+DEBUG:     [2026-04-12 01:43:38]  [KJ-LOGGER] [token_utils.py:106] - Token revoked: b313d2a2-6fad-473b-8863-fb915e2ccf92
+DEBUG:     [2026-04-12 01:43:38]  [KJ-LOGGER] [user_service.py:300] - No refresh token was found in the user's client.
+DEBUG:     [2026-04-12 01:43:38]  [KJ-LOGGER] [user_service.py:300] - No refresh token was found in the user's client.
+DEBUG:     [2026-04-12 01:43:41]  [KJ-LOGGER] [token_utils.py:90] - Token created in database
+DEBUG:     [2026-04-12 01:49:01]  [KJ-LOGGER] [token_utils.py:106] - Token revoked: c6c3fa6f-cd9f-42d5-92b4-0e2b574ff747
+DEBUG:     [2026-04-12 01:49:02]  [KJ-LOGGER] [user_service.py:300] - No refresh token was found in the user's client.
+DEBUG:     [2026-04-12 01:49:02]  [KJ-LOGGER] [user_service.py:300] - No refresh token was found in the user's client.
+DEBUG:     [2026-04-12 01:49:04]  [KJ-LOGGER] [token_utils.py:90] - Token created in database
+DEBUG:     [2026-04-12 01:49:23]  [KJ-LOGGER] [token_utils.py:106] - Token revoked: cbfe3dd0-d00f-4089-b11e-a11ee4265556
+DEBUG:     [2026-04-12 01:49:23]  [KJ-LOGGER] [user_service.py:300] - No refresh token was found in the user's client.
+DEBUG:     [2026-04-12 01:49:23]  [KJ-LOGGER] [user_service.py:300] - No refresh token was found in the user's client.
+DEBUG:     [2026-04-12 01:49:48]  [KJ-LOGGER] [token_utils.py:90] - Token created in database
+DEBUG:     [2026-04-12 09:57:55]  [KJ-LOGGER] [token_utils.py:106] - Token revoked: e8815eb8-48ed-4b72-af05-06fdfab1f90b
+DEBUG:     [2026-04-12 09:57:55]  [KJ-LOGGER] [token_utils.py:90] - Token created in database
+DEBUG:     [2026-04-12 09:57:55]  [KJ-LOGGER] [user_service.py:313] - Invalid refresh token
+DEBUG:     [2026-04-12 09:57:59]  [KJ-LOGGER] [token_utils.py:90] - Token created in database
+DEBUG:     [2026-04-12 11:00:53]  [KJ-LOGGER] [token_utils.py:106] - Token revoked: b50e0a74-c180-4ab8-aa18-4d265cada362
+DEBUG:     [2026-04-12 11:00:54]  [KJ-LOGGER] [token_utils.py:90] - Token created in database
+DEBUG:     [2026-04-12 11:42:26]  [KJ-LOGGER] [token_utils.py:106] - Token revoked: 82e7ebd4-b51f-4636-b7f1-c4b3ea092973
+DEBUG:     [2026-04-12 11:42:29]  [KJ-LOGGER] [user_service.py:300] - No refresh token was found in the user's client.
+DEBUG:     [2026-04-12 11:42:29]  [KJ-LOGGER] [user_service.py:300] - No refresh token was found in the user's client.
+DEBUG:     [2026-04-12 11:42:39]  [KJ-LOGGER] [token_utils.py:90] - Token created in database
+DEBUG:     [2026-04-12 11:44:47]  [KJ-LOGGER] [token_utils.py:106] - Token revoked: f91f9dcd-d607-4664-a85b-dcf8dbecfd0a
+DEBUG:     [2026-04-12 11:44:47]  [KJ-LOGGER] [user_service.py:300] - No refresh token was found in the user's client.
+DEBUG:     [2026-04-12 11:44:47]  [KJ-LOGGER] [user_service.py:300] - No refresh token was found in the user's client.
+DEBUG:     [2026-04-12 11:44:53]  [KJ-LOGGER] [token_utils.py:90] - Token created in database
+DEBUG:     [2026-04-12 12:06:14]  [KJ-LOGGER] [token_utils.py:106] - Token revoked: 980fa6eb-0cff-479f-a7e3-ed587476f33f
+DEBUG:     [2026-04-12 12:06:16]  [KJ-LOGGER] [user_service.py:300] - No refresh token was found in the user's client.
+DEBUG:     [2026-04-12 12:06:16]  [KJ-LOGGER] [user_service.py:300] - No refresh token was found in the user's client.
+DEBUG:     [2026-04-12 12:06:20]  [KJ-LOGGER] [token_utils.py:90] - Token created in database
+DEBUG:     [2026-04-12 12:06:43]  [KJ-LOGGER] [token_utils.py:90] - Token created in database
+DEBUG:     [2026-04-12 12:18:30]  [KJ-LOGGER] [token_utils.py:106] - Token revoked: a1fb808a-5910-4e79-803c-1f4a38d2c6f7
+DEBUG:     [2026-04-12 12:18:30]  [KJ-LOGGER] [user_service.py:300] - No refresh token was found in the user's client.
+DEBUG:     [2026-04-12 12:18:30]  [KJ-LOGGER] [user_service.py:300] - No refresh token was found in the user's client.
+DEBUG:     [2026-04-12 12:18:41]  [KJ-LOGGER] [token_utils.py:90] - Token created in database
+DEBUG:     [2026-04-12 12:25:08]  [KJ-LOGGER] [token_utils.py:106] - Token revoked: 00bdfdf4-7852-47c3-8a51-fc256460cedc
+DEBUG:     [2026-04-12 12:25:08]  [KJ-LOGGER] [user.py:300] - No refresh token was found in the user's client.
+DEBUG:     [2026-04-12 12:25:08]  [KJ-LOGGER] [user.py:300] - No refresh token was found in the user's client.
+DEBUG:     [2026-04-12 12:25:18]  [KJ-LOGGER] [token_utils.py:90] - Token created in database
+DEBUG:     [2026-04-12 12:25:24]  [KJ-LOGGER] [token_utils.py:106] - Token revoked: c12747d3-1843-4b21-ad43-42a246cfee3c
+DEBUG:     [2026-04-12 12:25:26]  [KJ-LOGGER] [token_utils.py:90] - Token created in database
+DEBUG:     [2026-04-12 12:25:41]  [KJ-LOGGER] [token_utils.py:106] - Token revoked: fdb93138-6289-4755-8fb5-4bd501856aa0
+DEBUG:     [2026-04-12 12:25:42]  [KJ-LOGGER] [user.py:300] - No refresh token was found in the user's client.
+DEBUG:     [2026-04-12 12:25:42]  [KJ-LOGGER] [user.py:300] - No refresh token was found in the user's client.
+DEBUG:     [2026-04-12 12:25:47]  [KJ-LOGGER] [token_utils.py:90] - Token created in database
+DEBUG:     [2026-04-12 12:28:30]  [KJ-LOGGER] [token_utils.py:106] - Token revoked: 8d1e180c-3874-45fc-816f-30bd94131740
+DEBUG:     [2026-04-12 12:28:30]  [KJ-LOGGER] [user.py:300] - No refresh token was found in the user's client.
+DEBUG:     [2026-04-12 12:28:30]  [KJ-LOGGER] [user.py:300] - No refresh token was found in the user's client.
+DEBUG:     [2026-04-12 12:28:38]  [KJ-LOGGER] [token_utils.py:90] - Token created in database
