@@ -4,44 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0bc21ee9-1675-45ab-a3bd-2a6be0259344" name="Changes" comment="Refactor user management and enhance authentication flows&#10;&#10;Replaced deprecated database fetch methods and refined user creation logic. Added login and logout functionality with token handling, streamlined email verification, and improved password reset flow. This update ensures better modularity, security, and maintainability.">
-      <change afterPath="$PROJECT_DIR$/app/models/refresh_tokens.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/routers/auth.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/schemas/geofence.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/auth/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/utils/security_dependencies.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/auth/api_keys.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/auth/auth_router.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/auth/sessions/SessionHandler.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/auth/sessions/__init__.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/auth/sessions/sessionDependencies.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/common.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/common.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/infra/token_utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/infra/token_utils.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/models/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/models/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/models/attendance_record.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/models/attendance_record.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/models/geofence.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/models/geofence.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/models/user.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/models/user.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/redis/__init__.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/redis/redis_client.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/repositories/SessionRepository.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/repositories/SessionRepository.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/repositories/geofence_repository.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/repositories/geofence_repository.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/routers/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/routers/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/routers/admin_router.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/routers/admin.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/routers/general_user_router.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/routers/general_user.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/routers/geofence_router.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/routers/geofence.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/routers/student_router.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/routers/student.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/schemas/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/schemas/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/schemas/attendance_record_schema.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/schemas/attendance_record.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/schemas/geofence_schema.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/services/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/services/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/services/geofence_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/services/geofence.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/services/user_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/services/user.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/settings.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docker-compose.yml" beforeDir="false" afterPath="$PROJECT_DIR$/docker-compose.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/logs/app.log" beforeDir="false" afterPath="$PROJECT_DIR$/logs/app.log" afterDir="false" />
-    </list>
+    <list default="true" id="0bc21ee9-1675-45ab-a3bd-2a6be0259344" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
