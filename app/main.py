@@ -1,16 +1,12 @@
 import time
-from fastapi import Depends, FastAPI, Request
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
-from contextlib import asynccontextmanager
 import logging
 
 import uvicorn
-
-from .auth.APIKeys import get_api_key
-
-from .routers import *
-from .auth.AuthRouter import AuthRouter
-
+from .routers import auth_router
+from .routers import general_user_router
+from .routers import geofence_router
 logger=logging.getLogger("uvicorn")
 
 app = FastAPI(
@@ -46,7 +42,7 @@ async def measure_response_time(request: Request, call_next):
     response = await call_next(request)  # Process request
     end_time = time.perf_counter()  # End timer
     duration = (end_time - start_time) * 1000  # Convert to milliseconds
-    logger.info(f"Request: {request.method} {request.url} ~ {duration:.2f} ms")
+    logger.info(f"Request: {request.method} {request.url.path} ~ {duration:.2f} ms")
     return response
 
 
@@ -66,16 +62,12 @@ app.add_middleware(
 )
 
 
-@app.get("/", dependencies=[Depends(get_api_key)])
-async def index():
-    return "Hello World 1"
 
-
-app.include_router(GeneralUserRouter)
-app.include_router(AuthRouter)
-app.include_router(AdminRouter)
-app.include_router(StudentRouter)
-app.include_router(GeofenceRouter)
+app.include_router(general_user_router)
+app.include_router(auth_router)
+app.include_router(geofence_router)
+# app.include_router(admin_router)
+# # app.include_router(student_router)
 
 if __name__ == "__main__":
     uvicorn.run(__name__ + ":app", host="0.0.0.0", port=8000, reload=True)

@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block title %}Verify Your Account{% endblock %}
+
+{% block header %}
+Verify Your Account
+{% endblock %}
+
+{% block content %}
+<p>Thank you for creating an account with Ave Geofencing.</p>
+
+<p>Please verify your email address by clicking the button below:</p>
+
+<a class="button" href="{{ verification_link }}">Verify Account</a>
+
+<p>
+    This verification link will expire in
+    <strong>{{ token_expiry_minutes }} minutes</strong>.
+</p>
+
+<p>If you did not create this account, you can safely ignore this email.</p>
+{% endblock %}
