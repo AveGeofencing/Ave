@@ -13,6 +13,23 @@ from ..utils import logger
 
 class UserRepository:
     @classmethod
+    async def create_new_user(cls, user: UserCreateModel, conn: AsyncSession):
+        new_user: User = User(
+            id=user.user_id,
+            email=user.email,
+            user_matric=user.user_matric,
+            role=user.role,
+            username=user.username,
+            hashed_password=user.password,
+        )
+
+        conn.add(new_user)
+        await conn.flush()
+        await conn.refresh(new_user)
+
+        return new_user
+
+    @classmethod
     async def get_user_by_id(cls, user_id: str, conn: AsyncSession):
         stmt = select(User).where(User.id == user_id)
         result = await conn.execute(stmt)
@@ -34,43 +51,9 @@ class UserRepository:
         return user
 
     @classmethod
-    async def create_new_user(cls, user: UserCreateModel, conn: AsyncSession):
-        new_user: User = User(
-            id=user.user_id,
-            email=user.email,
-            user_matric=user.user_matric,
-            role=user.role,
-            username=user.username,
-            hashed_password=user.password,
-            is_email_verified=False
-        )
-
-        conn.add(new_user)
-        await conn.flush()
-        await conn.refresh(new_user)
-
-        return new_user
-
-    @classmethod
     async def change_user_password(cls, user_id: str, new_hashed_password: str, conn: AsyncSession):
         stmt = update(User).where(User.id == user_id).values(hashed_password=new_hashed_password).returning(User.email)
         result = await conn.execute(stmt)
         row = result.scalar()
         logger.debug(f"Password changed for user {row}")
         return row
-
-    @classmethod
-    async def verify_user(cls, conn: AsyncSession, user_id: str):
-        stmt = (
-            update(User)
-            .where(User.id == user_id)
-            .where(User.is_email_verified == False)
-            .values(is_email_verified=True).returning(User.id)
-        )
-        result = await conn.execute(stmt)
-        row = result.scalar()  # Returns the first affected row or None
-
-        if row:
-            return True  # user was verified just now
-        else:
-            return False  # user was already verified (no row changed)

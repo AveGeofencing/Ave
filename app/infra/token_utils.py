@@ -3,7 +3,7 @@ from datetime import UTC, datetime, timedelta
 from enum import StrEnum
 from uuid import uuid4, UUID
 
-from jwt import PyJWTError, decode, encode
+from jwt import PyJWTError, decode, encode, InvalidSignatureError, ExpiredSignatureError
 from sqlalchemy import Delete, delete, exists, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -68,13 +68,20 @@ class BaseToken[DecodedType](ABC):
             claims: dict = decode(
                 token, key=APP_SETTINGS.SECRET_KEY, algorithms=[APP_SETTINGS.ALGORITHM]
             )
-        except PyJWTError:
+        except InvalidSignatureError as e:
+            logger.error(f"Error with token: {e}")
+            raise InvalidTokenError("The token's signature invalid")
+        except ExpiredSignatureError as e:
+            logger.error(f"Error with token: {e}")
+            raise InvalidTokenError("The token's signature has expired")
+        except PyJWTError as e:
+            logger.error(f"Error with token: {e}")
             raise InvalidTokenError
 
         # Validating the token type
         if claims.get("type") != cls.token_type.value:
             logger.error(f"Invalid token type: {claims.get('type')}. User passed an incorrect token type")
-            raise InvalidTokenError
+            raise InvalidTokenError("Incorrect token type passed to the endpoint")
         return claims
 
 
@@ -139,7 +146,7 @@ class RevocableToken[DecodedType](BaseToken[DecodedType]):
             await cls._ensure_token_in_db(conn=conn, jti=jti)
             await cls._revoke(conn=conn, jti=jti)
         else:
-            raise InvalidTokenError
+            raise InvalidTokenError("The provided token does not contain a JTI value")
         return claims
 
 
@@ -225,7 +232,7 @@ class AccountVerificationToken(BaseToken[UserOutputModel]):
 
         token_exists: Token|None = await cls._check_token_in_db(conn=conn, jti=claims["jti"])
         if token_exists:
-            raise InvalidTokenError
+            raise InvalidTokenError("The provided account verification token already exists in the database")
 
         data: dict = claims["data"] # Unpacking
         data["user_id"] = claims["sub"]

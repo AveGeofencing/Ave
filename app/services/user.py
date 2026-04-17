@@ -166,7 +166,7 @@ class UserService:
             # Generate token and reset link
             token = await PasswordResetToken.new(user_id=user.id, conn=self.conn)
 
-            reset_link = f"{settings.BASE_URL}/user/reset_password?token={token}"
+            reset_link = f"{settings.BASE_URL}/reset-password?token={token}"
 
             # Send email as a background task
             self.bg_tasks.add_task(

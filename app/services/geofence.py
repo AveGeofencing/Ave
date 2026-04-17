@@ -73,7 +73,7 @@ class GeofenceService:
                 now=NOW
             )
 
-            return {"code": fence_code, "name": added_geofence.name}
+            return {"id": added_geofence.id ,"code": fence_code, "name": added_geofence.name}
 
 
     async def get_all_geofences(
