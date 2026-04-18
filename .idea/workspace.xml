@@ -6,11 +6,6 @@
   <component name="ChangeListManager">
     <list default="true" id="0bc21ee9-1675-45ab-a3bd-2a6be0259344" name="Changes" comment="﻿Merge branch 'main' of https://github.com/AveGeofencing/Ave&#10;# Please enter a commit message to explain why this merge is necessary,&#10;# especially if it merges an updated upstream into a topic branch.&#10;#&#10;# Lines starting with '#' will be ignored, and an empty message aborts&#10;# the commit.">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/infra/token_utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/infra/token_utils.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/models/user.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/models/user.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/repositories/user_repository.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/repositories/user_repository.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/services/geofence.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/services/geofence.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docker-compose.yml" beforeDir="false" afterPath="$PROJECT_DIR$/docker-compose.yml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

@@ -47,10 +47,8 @@ async def measure_response_time(request: Request, call_next):
 
 
 origins = [
-    "http://127.0.0.0:3000",
     "http://localhost:3000",
-    "https://ave-main.onrender.com",
-    "http://127.0.0.1:3000",
+    "https://ave-frontend-service.onrender.com",
     "https://ave-po7b.onrender.com",
 ]
 app.add_middleware(
