@@ -6,7 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import or_, update
 from pydantic import EmailStr
 
-from ..schemas.user_schema import UserCreateModel
+from ..schemas.user import UserCreateModel
 from ..models import User
 from ..utils import logger
 
