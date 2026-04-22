@@ -7,6 +7,8 @@ import uvicorn
 from .routers import auth_router
 from .routers import general_user_router
 from .routers import geofence_router
+from .routers.rekognition import router as rekognition_router
+
 logger=logging.getLogger("uvicorn")
 
 app = FastAPI(
@@ -64,6 +66,7 @@ app.add_middleware(
 app.include_router(general_user_router)
 app.include_router(auth_router)
 app.include_router(geofence_router)
+app.include_router(rekognition_router)
 # app.include_router(admin_router)
 # # app.include_router(student_router)
 
