@@ -21,23 +21,6 @@ app = FastAPI(
     }
 )
 
-# @app.exception_handler(UserServiceException)
-# async def handle_user_service_error(request, exc: UserServiceException):
-#     return JSONResponse(
-#         status_code=exc.status_code,
-#         content={"error": exc.message},
-#         headers={"X-Error-Type": "UserServiceException"},
-#     )
-
-# @app.exception_handler(GeofenceServiceException)
-# async def hanlde_geofence_service_error(request, exc: GeofenceServiceException):
-#     return JSONResponse(
-#         status_code=exc.status_code,
-#         content={"error": exc.message},
-#         headers={"X-Error-Type": "GeofenceServiceException"},
-#     )
-
-
 @app.middleware("http")
 async def measure_response_time(request: Request, call_next):
     start_time = time.perf_counter()  # Start timer
