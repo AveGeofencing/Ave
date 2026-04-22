@@ -51,11 +51,11 @@ async def measure_response_time(request: Request, call_next):
 origins = [
     "http://localhost:3000",
     "https://ave-frontend-service.onrender.com",
-    "https://ave-po7b.onrender.com",
 ]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,  # Just for Development. Would be changed later.
+    allow_origins=origins,
     allow_credentials=True,
     allow_methods=["GET", "POST", "PUT", "DELETE"],
     allow_headers=["*"],
