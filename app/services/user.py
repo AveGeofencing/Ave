@@ -78,6 +78,9 @@ class UserService:
 
             return {"user_email": unverified_user_data.get("email"), "user_id": unverified_user_data.get("user_id")}
 
+    async def verify_photo_quality(self, file) -> bool:
+        pass
+
     async def create_new_user(self, user: UserCreateModel) -> dict:
         """Create a new user account, create verification code, send verification code"""
         async with self.conn.begin():
@@ -87,6 +90,8 @@ class UserService:
                     status_code=status.HTTP_400_BAD_REQUEST,
                     detail=f"Password must be at least {PASSWORD_MIN_LENGTH} characters"
                 )
+
+            # TODO: Verify photo quality
 
             #Hash password
             user.password = hash_password(user.password)
