@@ -1,11 +1,13 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, UploadFile, File
 from fastapi.security import OAuth2PasswordRequestForm
+from starlette import status
 from starlette.requests import Request
 from starlette.responses import Response
 
 from app.schemas import UserCreateModel, UserOutputModel
+from app.schemas.user import user_create_form
 from app.services import UserService
 from app.utils.security_dependencies import get_current_user
 
@@ -23,11 +25,16 @@ async def register_user(email: str, user_service: Annotated[UserService, Depends
 async def verify_token(token: str, user_service: Annotated[UserService, Depends()]):
     return await user_service.verify_token(verification_token=token)
 
-@router.post("/create-user")
-async def create_user(user_service: Annotated[UserService, Depends()], user_create_model: UserCreateModel):
+@router.post("/create-user", status_code=status.HTTP_201_CREATED,)
+async def create_user(
+        user_service: Annotated[UserService, Depends()],
+        user: UserCreateModel = Depends(user_create_form),
+        photo_ref_upload: UploadFile = File(...)):
     return await user_service.create_new_user(
-        user=user_create_model
+        user=user,
+        photo_upload=photo_ref_upload
     )
+
 @router.post("/login")
 async def login(
     user_service: Annotated[UserService, Depends()],
