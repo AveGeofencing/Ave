@@ -1,4 +1,3 @@
-from .SessionRepository import SessionRepository, get_session_repository
 from .user_repository import UserRepository
 from .geofence_repository import GeofenceRepository
 from .used_password_reset_token_repo import UsedPasswordResetTokenRepo
