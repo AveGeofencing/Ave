@@ -7,6 +7,7 @@ from .used_password_reset_tokens import UsedPasswordResetToken
 from .refresh_tokens import Token
 from .college import College
 from .department import Department
+from .college import College
 
 __all__ = [
     "Base",
@@ -16,6 +17,6 @@ __all__ = [
     "PasswordResetToken",
     "UsedPasswordResetToken",
     "Token",
-    "college",
-    "department"
+    "College",
+    "Department"
 ]

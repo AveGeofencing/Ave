@@ -1,4 +1,3 @@
-from pprint import pprint
 from typing import Annotated, Optional, Dict, Any, Sequence, List
 
 import boto3
@@ -172,7 +171,7 @@ class UserService:
             except IntegrityError as e:
                 raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(e))
 
-            dashboard_link: str = f"{settings.BASE_URL}/dashboard"
+            dashboard_link: str = f"{settings.BASE_URL}/dashboard/{created_user.role}"
             self.bg_tasks.add_task(
                 send_email_task,
                 email_context=WelcomeUserEmail(
