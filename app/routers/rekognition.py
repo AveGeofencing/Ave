@@ -1,20 +1,18 @@
-from typing import Annotated
-
-from PIL import Image
-import io
 import boto3
 
 from fastapi import HTTPException, APIRouter
 from fastapi.params import Depends
+from typing import Annotated
 
 from app.schemas import UserOutputModel
+from app.services import UserService
 from app.utils.security_dependencies import get_current_user
 
 router = APIRouter(prefix="/rekognition", tags=["Rekognition"])
 rekognition = boto3.client("rekognition", region_name="us-east-1")
 
 @router.post("/create-session")
-def create_session(_: Annotated[UserOutputModel, Depends(get_current_user)]):
+async def create_session(_: Annotated[UserOutputModel, Depends(get_current_user)]):
     try:
         response = rekognition.create_face_liveness_session()
         return {"sessionId": response["SessionId"]}
@@ -23,17 +21,12 @@ def create_session(_: Annotated[UserOutputModel, Depends(get_current_user)]):
 
 
 @router.get("/get-results/{session_id}")
-def get_results(session_id: str, _: Annotated[UserOutputModel, Depends(get_current_user)]):
-    try:
-        response = rekognition.get_face_liveness_session_results(
-            SessionId=session_id
-        )
-
-        return {
-            "status": response["Status"],
-            "confidence": response.get("Confidence", 0),
-            # "referenceImage": response.get("ReferenceImage", None),
-        }
-    except Exception as e:
-        print(e)
-        raise HTTPException(status_code=500, detail=str(e))
+async def get_results(
+        session_id: str,
+        user: Annotated[UserOutputModel, Depends(get_current_user)],
+        user_service: Annotated[UserService, Depends()]
+):
+    return await user_service.compare_and_verify_face(
+        user=user,
+        session_id=session_id
+    )

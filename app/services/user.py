@@ -20,7 +20,7 @@ from ..email import send_email_task
 from ..repositories import UserRepository, UsedPasswordResetTokenRepo
 from ..schemas import UserCreateModel, UserOutputModel
 from ..schemas.college import CollegeSchema
-from ..schemas.rekognition import RekognitionResponse
+from ..schemas.rekognition import DetectFacesResponse, CompareFacesResponse
 from ..utils import (
     PASSWORD_MIN_LENGTH, logger,
 )
@@ -85,7 +85,6 @@ class UserService:
             except InvalidTokenError:
                 raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Link expired.")
 
-
     async def _is_valid_photo_file(self, file: UploadFile):
         header = await file.read(2048)  # read first 2KB
         await file.seek(0)  # reset
@@ -110,7 +109,7 @@ class UserService:
                 Attributes=["ALL"],
             )
 
-            formatted_response: RekognitionResponse = RekognitionResponse.model_validate(response)
+            formatted_response: DetectFacesResponse = DetectFacesResponse.model_validate(response)
         except Exception as e:
             logger.error(f"Error verifying photo quality: {e}")
             raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Error verifying photo quality.")
@@ -139,7 +138,6 @@ class UserService:
             Body=await photo_upload.read(),
             ContentType=photo_upload.content_type,
         )
-
         return s3_key
 
     async def create_new_user(self, user: UserCreateModel, photo_upload: UploadFile) -> dict:
@@ -436,3 +434,45 @@ class UserService:
 
         formatted_colleges: List[CollegeSchema] = [CollegeSchema.model_validate(college, from_attributes=True) for college in colleges]
         return formatted_colleges
+
+    async def compare_and_verify_face(self, user: UserOutputModel, session_id: str):
+        try:
+            response = rekognition_client.get_face_liveness_session_results(SessionId=session_id)
+        except Exception as e:
+            print(e)
+            raise HTTPException(status_code=500, detail=str(e))
+
+        reference_image = response.get("ReferenceImage", None)
+        if not reference_image:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Error verifying liveness")
+
+        s3_key = f"base_user_reference_photos/users/{user.user_matric}/profile_photo.jpg"
+
+        try:
+            s3_object = s3_client.get_object(Bucket="ave-base-bucket", Key=s3_key)
+            source_bytes = s3_object["Body"].read()
+
+            compare_faces_response = rekognition_client.compare_faces(
+                TargetImage={"Bytes": reference_image["Bytes"]},
+                SourceImage={"Bytes": source_bytes},
+                SimilarityThreshold=80,
+            )
+        except Exception as e:
+            logger.error(f"Error verifying face: {e}")
+            raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Facial verification failed")
+
+        formated_compare_faces_response: CompareFacesResponse =CompareFacesResponse.model_validate(compare_faces_response)
+        if not formated_compare_faces_response.FaceMatches:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Facial verification failed")
+
+        if len(formated_compare_faces_response.FaceMatches) > 1:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Too many faces in the captured video feed. Try again")
+
+        similarity_threshold = 80
+        if formated_compare_faces_response.FaceMatches[0].Similarity < similarity_threshold:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Facial verification failed")
+
+        return {
+            "status": response["Status"],
+            "confidence": response.get("Confidence", 0),
+        }
