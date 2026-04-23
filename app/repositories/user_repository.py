@@ -7,7 +7,7 @@ from sqlalchemy import or_, update
 from pydantic import EmailStr
 
 from ..schemas.user import UserCreateModel
-from ..models import User
+from ..models import User, College
 from ..utils import logger
 
 
@@ -59,3 +59,9 @@ class UserRepository:
         row = result.scalar()
         logger.debug(f"Password changed for user {row}")
         return row
+
+    @classmethod
+    async def get_list_of_colleges(cls, conn: AsyncSession):
+        stmt = select(College).options(selectinload(College.departments))
+        result = await conn.execute(stmt)
+        return result.scalars()

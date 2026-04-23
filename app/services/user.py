@@ -1,4 +1,5 @@
-from typing import Annotated, Optional, Dict, Any
+from pprint import pprint
+from typing import Annotated, Optional, Dict, Any, Sequence, List
 
 import boto3
 import magic
@@ -15,10 +16,11 @@ from ..email.types import WelcomeUserEmail, PasswordResetConfirmation
 from ..email.types.no_reply import UserVerificationEmail, PasswordResetEmail
 from ..exceptions import InvalidTokenError
 from ..infra.token_utils import AccountVerificationToken, PasswordResetToken, AccessToken, RefreshToken
-from ..models import User
+from ..models import User, College
 from ..email import send_email_task
 from ..repositories import UserRepository, UsedPasswordResetTokenRepo
 from ..schemas import UserCreateModel, UserOutputModel
+from ..schemas.college import CollegeSchema
 from ..schemas.rekognition import RekognitionResponse
 from ..utils import (
     PASSWORD_MIN_LENGTH, logger,
@@ -427,3 +429,11 @@ class UserService:
                 "access_token": new_access_token,
                 "token_type": "Bearer",
             }
+
+    async def get_college_list(self):
+        colleges: Sequence[College] = await self.user_repository.get_list_of_colleges(
+            conn=self.conn
+        )
+
+        formatted_colleges: List[CollegeSchema] = [CollegeSchema.model_validate(college, from_attributes=True) for college in colleges]
+        return formatted_colleges

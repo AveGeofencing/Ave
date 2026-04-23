@@ -32,3 +32,9 @@ async def reset_password(
 ):
 
     return await user_service.change_password(new_password, token)
+
+@general_user_router.get("/colleges")
+async def get_colleges(
+    user_service: Annotated[UserService, Depends()]
+):
+    return await user_service.get_college_list()
