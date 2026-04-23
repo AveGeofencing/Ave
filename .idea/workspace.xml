@@ -4,12 +4,16 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0bc21ee9-1675-45ab-a3bd-2a6be0259344" name="Changes" comment="﻿Merge branch 'main' of https://github.com/AveGeofencing/Ave&#10;# Please enter a commit message to explain why this merge is necessary,&#10;# especially if it merges an updated upstream into a topic branch.&#10;#&#10;# Lines starting with '#' will be ignored, and an empty message aborts&#10;# the commit.">
-      <change afterPath="$PROJECT_DIR$/app/models/college.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/models/department.py" afterDir="false" />
+    <list default="true" id="0bc21ee9-1675-45ab-a3bd-2a6be0259344" name="Changes" comment="Add file upload support to user creation endpoint&#10;&#10;Updated the `/create-user` endpoint to accept a file upload alongside user data. Introduced a `photo_ref_upload` parameter and modified dependencies to include structured form data for user creation.">
+      <change afterPath="$PROJECT_DIR$/app/schemas/college.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/models/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/models/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/models/user.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/models/user.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/models/college.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/models/college.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/models/department.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/models/department.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/repositories/SessionRepository.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/repositories/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/repositories/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/repositories/user_repository.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/repositories/user_repository.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/routers/general_user.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/routers/general_user.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/services/user.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/services/user.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -90,8 +94,43 @@
       <option name="project" value="LOCAL" />
       <updated>1775994890088</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="Add `python-magic` dependency to project&#10;&#10;`python-magic` has been added to the dependency files `uv.lock` and `pyproject.toml` with version `0.4.27`. This ensures the required library is available for handling file type magic numbers.">
+      <option name="closed" value="true" />
+      <created>1776908960037</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1776908960037</updated>
+    </task>
+    <task id="LOCAL-00006" summary="Add Rekognition integration and photo quality checks for users&#10;&#10;Implemented AWS Rekognition-based face detection and photo quality validation in user registration. Added S3 integration to upload profile images and updated the user creation workflow to handle image processing and storage. Adjusted schemas and repositories to accommodate these changes.">
+      <option name="closed" value="true" />
+      <created>1776909014520</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1776909014520</updated>
+    </task>
+    <task id="LOCAL-00007" summary="Add file upload support to user creation endpoint&#10;&#10;Updated the `/create-user` endpoint to accept a file upload alongside user data. Introduced a `photo_ref_upload` parameter and modified dependencies to include structured form data for user creation.">
+      <option name="closed" value="true" />
+      <created>1776909020663</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1776909020663</updated>
+    </task>
+    <option name="localTasksCounter" value="8" />
     <servers />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="migra" />
@@ -99,6 +138,10 @@
     <MESSAGE value="Refactor user management and enhance authentication flows&#10;&#10;Replaced deprecated database fetch methods and refined user creation logic. Added login and logout functionality with token handling, streamlined email verification, and improved password reset flow. This update ensures better modularity, security, and maintainability." />
     <MESSAGE value="Clean up workspace.xml change list comments&#10;&#10;Removed verbose and unnecessary comments from the `.idea/workspace.xml` file to streamline the project configuration. This helps reduce clutter and focus on essential settings." />
     <MESSAGE value="Remove `env.yaml` and update `.gitignore`&#10;&#10;Deleted `env.yaml` containing sensitive information and added it to `.gitignore` to prevent accidental inclusion in the repository. This improves security and aligns with best practices for handling environment variables" />
-    <option name="LAST_COMMIT_MESSAGE" value="Remove `env.yaml` and update `.gitignore`&#10;&#10;Deleted `env.yaml` containing sensitive information and added it to `.gitignore` to prevent accidental inclusion in the repository. This improves security and aligns with best practices for handling environment variables" />
+    <MESSAGE value="Add Rekognition API routes for liveness detection&#10;&#10;Introduced routes to create liveness detection sessions and retrieve results using AWS Rekognition. Included logic to store the reference image from the session results." />
+    <MESSAGE value="Add `python-magic` dependency to project&#10;&#10;`python-magic` has been added to the dependency files `uv.lock` and `pyproject.toml` with version `0.4.27`. This ensures the required library is available for handling file type magic numbers." />
+    <MESSAGE value="Add Rekognition integration and photo quality checks for users&#10;&#10;Implemented AWS Rekognition-based face detection and photo quality validation in user registration. Added S3 integration to upload profile images and updated the user creation workflow to handle image processing and storage. Adjusted schemas and repositories to accommodate these changes." />
+    <MESSAGE value="Add file upload support to user creation endpoint&#10;&#10;Updated the `/create-user` endpoint to accept a file upload alongside user data. Introduced a `photo_ref_upload` parameter and modified dependencies to include structured form data for user creation." />
+    <option name="LAST_COMMIT_MESSAGE" value="Add file upload support to user creation endpoint&#10;&#10;Updated the `/create-user` endpoint to accept a file upload alongside user data. Introduced a `photo_ref_upload` parameter and modified dependencies to include structured form data for user creation." />
   </component>
 </project>
