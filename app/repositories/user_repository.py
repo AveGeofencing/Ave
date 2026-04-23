@@ -13,7 +13,7 @@ from ..utils import logger
 
 class UserRepository:
     @classmethod
-    async def create_new_user(cls, user: UserCreateModel, conn: AsyncSession):
+    async def create_new_user(cls, user: UserCreateModel, bucket_image_key: str, conn: AsyncSession):
         new_user: User = User(
             id=user.user_id,
             email=user.email,
@@ -21,6 +21,8 @@ class UserRepository:
             role=user.role,
             username=user.username,
             hashed_password=user.password,
+            department_id=user.department_id,
+            bucket_image_key=bucket_image_key
         )
 
         conn.add(new_user)

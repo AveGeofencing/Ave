@@ -1,5 +1,9 @@
 from typing import Annotated, Optional, Dict, Any
-from fastapi import BackgroundTasks, HTTPException, Depends
+
+import boto3
+import magic
+from sqlalchemy.exc import IntegrityError
+from fastapi import BackgroundTasks, HTTPException, Depends, UploadFile
 from starlette import status
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette.requests import Request
@@ -15,6 +19,7 @@ from ..models import User
 from ..email import send_email_task
 from ..repositories import UserRepository, UsedPasswordResetTokenRepo
 from ..schemas import UserCreateModel, UserOutputModel
+from ..schemas.rekognition import RekognitionResponse
 from ..utils import (
     PASSWORD_MIN_LENGTH, logger,
 )
@@ -22,6 +27,8 @@ from ..settings import APP_SETTINGS
 
 settings = APP_SETTINGS
 
+rekognition_client = boto3.client("rekognition", region_name="us-east-1")
+s3_client = boto3.client("s3", region_name="eu-west-2")
 
 class UserService:
     def __init__(
@@ -73,15 +80,68 @@ class UserService:
         async with self.conn.begin():
             try:
                 unverified_user_data: dict = await AccountVerificationToken.decode(verification_token, conn=self.conn)
+                return {"user_email": unverified_user_data.get("email"), "user_id": unverified_user_data.get("user_id")}
             except InvalidTokenError:
                 raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Link expired.")
 
-            return {"user_email": unverified_user_data.get("email"), "user_id": unverified_user_data.get("user_id")}
 
-    async def verify_photo_quality(self, file) -> bool:
-        pass
+    async def _is_valid_photo_file(self, file: UploadFile):
+        header = await file.read(2048)  # read first 2KB
+        await file.seek(0)  # reset
 
-    async def create_new_user(self, user: UserCreateModel) -> dict:
+        mime = magic.from_buffer(header, mime=True)
+        if mime not in ["image/jpeg", "image/png"]:
+            return False
+
+        return True
+
+    async def _verify_photo_quality(self, file: UploadFile):
+        if not await self._is_valid_photo_file(file):
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="File provided is not an image.")
+
+        image_bytes = await file.read()
+        await file.seek(0)
+
+        try:
+            """Detect faces in an image using Amazon Rekognition."""
+            response: dict = rekognition_client.detect_faces(
+                Image={"Bytes": image_bytes},
+                Attributes=["ALL"],
+            )
+
+            formatted_response: RekognitionResponse = RekognitionResponse.model_validate(response)
+        except Exception as e:
+            logger.error(f"Error verifying photo quality: {e}")
+            raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Error verifying photo quality.")
+
+        if formatted_response.FaceDetails is None or formatted_response.FaceDetails == []:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="No faces detected in the image.")
+
+        if len(formatted_response.FaceDetails) > 1:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Multiple faces detected in the image. Only register one face per user.")
+
+        if quality := formatted_response.FaceDetails[0].Quality:
+            if quality.Brightness is not None and quality.Brightness < 50:
+                raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Image is too dark. Try a different image.")
+            if quality.Sharpness is not None and quality.Sharpness < 50:
+                raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Image is too blurry. Try a different image.")
+
+        return
+
+    async def _upload_file_to_s3(self, user: UserCreateModel, photo_upload: UploadFile):
+        s3_key = f"base_user_reference_photos/users/{user.user_matric}/profile_photo.jpg"
+        await photo_upload.seek(0)
+
+        s3_client.put_object(
+            Bucket="ave-base-bucket",
+            Key=s3_key,
+            Body=await photo_upload.read(),
+            ContentType=photo_upload.content_type,
+        )
+
+        return s3_key
+
+    async def create_new_user(self, user: UserCreateModel, photo_upload: UploadFile) -> dict:
         """Create a new user account, create verification code, send verification code"""
         async with self.conn.begin():
             # Validate password
@@ -91,13 +151,24 @@ class UserService:
                     detail=f"Password must be at least {PASSWORD_MIN_LENGTH} characters"
                 )
 
-            # TODO: Verify photo quality
+            try:
+                # verify photo quality
+                await self._verify_photo_quality(photo_upload)
+                s3_key = await self._upload_file_to_s3(user=user, photo_upload=photo_upload)
+            except Exception as e:
+                logger.error(f"Error uploading photo to S3: {e}")
+                raise
 
             #Hash password
             user.password = hash_password(user.password)
-            created_user: User = await self.user_repository.create_new_user(
-                user, conn=self.conn
-            )
+
+            # Create user
+            try:
+                created_user: User = await self.user_repository.create_new_user(
+                    user, bucket_image_key=s3_key, conn=self.conn
+                )
+            except IntegrityError as e:
+                raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(e))
 
             dashboard_link: str = f"{settings.BASE_URL}/dashboard"
             self.bg_tasks.add_task(

@@ -1,24 +1,20 @@
+from typing import Annotated
+
 from PIL import Image
 import io
 import boto3
 
 from fastapi import HTTPException, APIRouter
+from fastapi.params import Depends
+
+from app.schemas import UserOutputModel
+from app.utils.security_dependencies import get_current_user
 
 router = APIRouter(prefix="/rekognition", tags=["Rekognition"])
 rekognition = boto3.client("rekognition", region_name="us-east-1")
 
-
-def get_image(image_bytes):
-
-        # Convert to image
-        image = Image.open(io.BytesIO(image_bytes))
-
-        # Example: save it
-        image.save("reference.jpg")
-
-
 @router.post("/create-session")
-def create_session():
+def create_session(_: Annotated[UserOutputModel, Depends(get_current_user)]):
     try:
         response = rekognition.create_face_liveness_session()
         return {"sessionId": response["SessionId"]}
@@ -27,12 +23,11 @@ def create_session():
 
 
 @router.get("/get-results/{session_id}")
-def get_results(session_id: str):
+def get_results(session_id: str, _: Annotated[UserOutputModel, Depends(get_current_user)]):
     try:
         response = rekognition.get_face_liveness_session_results(
             SessionId=session_id
         )
-        get_image(response["ReferenceImage"]["Bytes"])
 
         return {
             "status": response["Status"],
