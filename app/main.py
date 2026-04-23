@@ -21,23 +21,6 @@ app = FastAPI(
     }
 )
 
-# @app.exception_handler(UserServiceException)
-# async def handle_user_service_error(request, exc: UserServiceException):
-#     return JSONResponse(
-#         status_code=exc.status_code,
-#         content={"error": exc.message},
-#         headers={"X-Error-Type": "UserServiceException"},
-#     )
-
-# @app.exception_handler(GeofenceServiceException)
-# async def hanlde_geofence_service_error(request, exc: GeofenceServiceException):
-#     return JSONResponse(
-#         status_code=exc.status_code,
-#         content={"error": exc.message},
-#         headers={"X-Error-Type": "GeofenceServiceException"},
-#     )
-
-
 @app.middleware("http")
 async def measure_response_time(request: Request, call_next):
     start_time = time.perf_counter()  # Start timer
@@ -51,11 +34,11 @@ async def measure_response_time(request: Request, call_next):
 origins = [
     "http://localhost:3000",
     "https://ave-frontend-service.onrender.com",
-    "https://ave-po7b.onrender.com",
 ]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,  # Just for Development. Would be changed later.
+    allow_origins=origins,
     allow_credentials=True,
     allow_methods=["GET", "POST", "PUT", "DELETE"],
     allow_headers=["*"],
