@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from typing import List, Dict
+from typing import List, Dict, Optional
 
 
 class BoundingBox(BaseModel):
@@ -79,6 +79,36 @@ class ResponseMetadata(BaseModel):
     RetryAttempts: int
 
 
-class RekognitionResponse(BaseModel):
+class Quality(BaseModel):
+    Brightness: float
+    Sharpness: float
+
+
+class Face(BaseModel):
+    BoundingBox: BoundingBox
+    Confidence: float
+    Landmarks: List[Landmark]
+    Pose: Pose
+    Quality: Quality
+
+
+class FaceMatch(BaseModel):
+    Face: Face
+    Similarity: float
+
+
+class SourceImageFace(BaseModel):
+    BoundingBox: BoundingBox
+    Confidence: float
+
+
+class DetectFacesResponse(BaseModel):
     FaceDetails: List[FaceDetail]
+    ResponseMetadata: ResponseMetadata
+
+
+class CompareFacesResponse(BaseModel):
+    FaceMatches: List[FaceMatch]
+    SourceImageFace: Optional[SourceImageFace]
+    UnmatchedFaces: List[Face]  # can be empty
     ResponseMetadata: ResponseMetadata
