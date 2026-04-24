@@ -4,6 +4,8 @@ from fastapi.middleware.cors import CORSMiddleware
 import logging
 
 import uvicorn
+from starlette.responses import JSONResponse
+
 from .routers import auth_router
 from .routers import general_user_router
 from .routers import geofence_router
@@ -30,10 +32,28 @@ async def measure_response_time(request: Request, call_next):
     logger.info(f"Request: {request.method} {request.url.path} ~ {duration:.2f} ms")
     return response
 
+@app.exception_handler(Exception)
+async def custom_exception_handler(_: Request, exc: Exception):
+    logger.error(f"{str(exc)}")
+    return JSONResponse(
+        status_code=500,
+        content={"detail": "An error occurred. Check server"},
+    )
+
+@app.exception_handler(ValueError)
+async def custom_exception_handler(_: Request, exc: Exception):
+    logger.error(f"{str(exc)}")
+    return JSONResponse(
+        status_code=422,
+        content={"detail": str(exc)},
+    )
+
+
 
 origins = [
     "http://localhost:3000",
     "https://ave-frontend-service.onrender.com",
+    "http://172.20.10.3:3000"
 ]
 
 app.add_middleware(

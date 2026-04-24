@@ -19,6 +19,8 @@ class TokenType(StrEnum):
     REFRESH = "refresh"
     PASSWORD_RESET = "password_reset"
     ACCOUNT_VERIFICATION = "account_verification"
+    SIGNUP_SESSION = "signup_session"
+
 
     @property
     def lifetime(self) -> timedelta:
@@ -29,7 +31,9 @@ TOKEN_LIFETIMES: dict[TokenType, timedelta] = {
     TokenType.ACCESS: timedelta(minutes=60),
     TokenType.PASSWORD_RESET: timedelta(minutes=10),
     TokenType.REFRESH: timedelta(weeks=1),
-    TokenType.ACCOUNT_VERIFICATION: timedelta(minutes=15)
+    TokenType.ACCOUNT_VERIFICATION: timedelta(minutes=15),
+    TokenType.SIGNUP_SESSION: timedelta(minutes=15),  # short window
+
 }
 
 
@@ -82,6 +86,7 @@ class BaseToken[DecodedType](ABC):
         if claims.get("type") != cls.token_type.value:
             logger.error(f"Invalid token type: {claims.get('type')}. User passed an incorrect token type")
             raise InvalidTokenError("Incorrect token type passed to the endpoint")
+
         return claims
 
 
@@ -245,3 +250,27 @@ class AccountVerificationToken(BaseToken[UserOutputModel]):
         )
 
         return data
+
+class SignupSessionToken(BaseToken[dict]):
+    token_type = TokenType.SIGNUP_SESSION
+
+    @classmethod
+    async def new(cls, user_id: str, email: str) -> str:
+        return await super().new(
+            sub=user_id,
+            data={
+                "email": email,
+                "purpose": "signup"   # guards against token misuse
+            }
+        )
+
+    @classmethod
+    async def decode(cls, token: str) -> dict:
+        claims = await super().decode(token)
+        if claims.get("data", {}).get("purpose") != "signup":
+            raise InvalidTokenError("Invalid token purpose")
+
+        return {
+            "user_id": claims["sub"],
+            "email": claims["data"]["email"]
+        }

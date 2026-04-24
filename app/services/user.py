@@ -1,3 +1,4 @@
+from http.client import responses
 from typing import Annotated, Optional, Dict, Any, Sequence, List
 
 import boto3
@@ -14,7 +15,8 @@ from ..database import get_db_session
 from ..email.types import WelcomeUserEmail, PasswordResetConfirmation
 from ..email.types.no_reply import UserVerificationEmail, PasswordResetEmail
 from ..exceptions import InvalidTokenError
-from ..infra.token_utils import AccountVerificationToken, PasswordResetToken, AccessToken, RefreshToken
+from ..infra.token_utils import AccountVerificationToken, PasswordResetToken, AccessToken, RefreshToken, \
+    SignupSessionToken
 from ..models import User, College
 from ..email import send_email_task
 from ..repositories import UserRepository, UsedPasswordResetTokenRepo
@@ -27,6 +29,8 @@ from ..utils import (
 from ..settings import APP_SETTINGS
 
 settings = APP_SETTINGS
+
+SECONDS_IN_1_MINUTE = 60
 
 rekognition_client = boto3.client("rekognition", region_name="us-east-1")
 s3_client = boto3.client("s3", region_name="eu-west-2")
@@ -66,6 +70,7 @@ class UserService:
                 user_email=email,
             )
 
+            print(f"Verification token: {registration_token}")
             verification_link = f"{settings.BASE_URL}/verify?token={registration_token}"
             self.bg_tasks.add_task(
                 send_email_task,
@@ -77,13 +82,29 @@ class UserService:
 
             return {"message": "Verification link send to your email address."}
 
-    async def verify_token(self, verification_token: str):
+    async def verify_token(self, verification_token: str, response: Response):
         async with self.conn.begin():
             try:
                 unverified_user_data: dict = await AccountVerificationToken.decode(verification_token, conn=self.conn)
-                return {"user_email": unverified_user_data.get("email"), "user_id": unverified_user_data.get("user_id")}
             except InvalidTokenError:
                 raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Link expired.")
+
+            signup_session_token: str = await SignupSessionToken.new(
+                user_id=unverified_user_data.get("user_id"),
+                email=unverified_user_data.get("email")
+            )
+
+            max_cookie_age = 15
+            set_custom_cookie(
+                response=response,
+                key="signup_session_token",
+                path="/",
+                value=signup_session_token,
+                max_age=max_cookie_age * SECONDS_IN_1_MINUTE
+            )
+
+        return
+
 
     async def _is_valid_photo_file(self, file: UploadFile):
         header = await file.read(2048)  # read first 2KB
@@ -112,19 +133,31 @@ class UserService:
             formatted_response: DetectFacesResponse = DetectFacesResponse.model_validate(response)
         except Exception as e:
             logger.error(f"Error verifying photo quality: {e}")
-            raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Error verifying photo quality.")
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Error verifying photo quality."
+            )
 
         if formatted_response.FaceDetails is None or formatted_response.FaceDetails == []:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="No faces detected in the image.")
 
         if len(formatted_response.FaceDetails) > 1:
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Multiple faces detected in the image. Only register one face per user.")
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Multiple faces detected in the image. Only register one face per user."
+            )
 
         if quality := formatted_response.FaceDetails[0].Quality:
             if quality.Brightness is not None and quality.Brightness < 50:
-                raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Image is too dark. Try a different image.")
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="Image is too dark. Try a different image."
+                )
             if quality.Sharpness is not None and quality.Sharpness < 50:
-                raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Image is too blurry. Try a different image.")
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="Image is too blurry. Try a different image."
+                )
 
         return
 
@@ -140,35 +173,53 @@ class UserService:
         )
         return s3_key
 
-    async def create_new_user(self, user: UserCreateModel, photo_upload: UploadFile) -> dict:
+    async def create_new_user(self, user: UserCreateModel, photo_upload: UploadFile, token: str, response: Response) -> dict:
+        if not token:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid verification link.")
+
         """Create a new user account, create verification code, send verification code"""
+        try:
+            user_details: dict = await SignupSessionToken.decode(token)
+        except InvalidTokenError:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid verification link.")
+
+        user_id: str | None = user_details.get("user_id", None)
+        user_email: str | None = user_details.get("email", None)
+
+        if not all([user_id, user_email]):
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Corrupted verification link")
+
+        user.email = user_email
+        user.user_id = user_id
+        user.password = hash_password(user.password)
+
+        # verify photo quality with s3
+        await self._verify_photo_quality(photo_upload)
+        try:
+            s3_key = await self._upload_file_to_s3(user=user, photo_upload=photo_upload)
+        except Exception as e:
+            logger.error(f"Error uploading photo to S3: {e}")
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Error uploading photo.")
+
+        # Database transaction
         async with self.conn.begin():
-            # Validate password
-            if len(user.password) < PASSWORD_MIN_LENGTH:
-                raise HTTPException(
-                    status_code=status.HTTP_400_BAD_REQUEST,
-                    detail=f"Password must be at least {PASSWORD_MIN_LENGTH} characters"
-                )
-
-            try:
-                # verify photo quality
-                await self._verify_photo_quality(photo_upload)
-                s3_key = await self._upload_file_to_s3(user=user, photo_upload=photo_upload)
-            except Exception as e:
-                logger.error(f"Error uploading photo to S3: {e}")
-                raise
-
-            #Hash password
-            user.password = hash_password(user.password)
-
             # Create user
             try:
                 created_user: User = await self.user_repository.create_new_user(
                     user, bucket_image_key=s3_key, conn=self.conn
                 )
             except IntegrityError as e:
-                raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(e))
+                logger.error(f"Error creating user: {e}")
+                raise HTTPException(
+                    status_code=status.HTTP_409_CONFLICT,
+                    detail="Ave already knows a user with this email or matric number. Wanna try logging in instead?"
+                )
 
+            response.delete_cookie(key="signup_session_token")
+
+            # Generate and send a welcome email to a user
             dashboard_link: str = f"{settings.BASE_URL}/dashboard/{created_user.role}"
             self.bg_tasks.add_task(
                 send_email_task,
@@ -177,6 +228,8 @@ class UserService:
                 ),
                 recipients=[created_user.email]
             )
+
+
             return {"message": "User created successfully"}
 
     async def get_user_by_email_or_matric(
