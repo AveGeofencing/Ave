@@ -8,6 +8,7 @@ class AttendanceRecordModel(BaseModel):
     lat: float
     long: float
     fence_code: str
+    liveness_session_id: str
 
 
 class AttendanceRecordOut(BaseModel):

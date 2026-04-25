@@ -4,6 +4,7 @@ import string
 from typing import Annotated, Dict, Sequence
 from zoneinfo import ZoneInfo
 
+import boto3
 from fastapi import Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette import status
@@ -13,7 +14,11 @@ from ..models import AttendanceRecord
 from ..schemas import GeofenceCreateModel, AttendanceRecordModel
 from ..repositories import GeofenceRepository, UserRepository
 from ..schemas.geofence import GeofenceOutputModel
-from ..utils import check_user_in_circular_geofence
+from ..schemas.rekognition import CompareFacesResponse, FaceLivenessSessionResult
+from ..utils import check_user_in_circular_geofence, logger
+
+rekognition_client = boto3.client("rekognition", region_name="us-east-1")
+s3_client = boto3.client("s3", region_name="eu-west-2")
 
 
 class GeofenceService:
@@ -202,13 +207,68 @@ class GeofenceService:
             if not user:
                 raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found.")
 
+            try:
+                response = rekognition_client.get_face_liveness_session_results(SessionId=attendance.liveness_session_id)
+                formatted_liveness_response: FaceLivenessSessionResult = FaceLivenessSessionResult.model_validate(response)
+            except Exception as e:
+                logger.error(e)
+                raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Error verifying liveness")
+
+            if formatted_liveness_response.Status != "SUCCEEDED":
+                raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Error verifying liveness")
+
+            logger.debug(f"Confidence in user liveness: {formatted_liveness_response.Confidence}")
+
+            liveness_threshold = 80
+            if formatted_liveness_response.Confidence < liveness_threshold:
+                raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Not a real user in the video feed. Try again")
+
+
+            reference_image = formatted_liveness_response.ReferenceImage
+            if not reference_image:
+                raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Error verifying liveness")
+
+            s3_key = f"base_user_reference_photos/users/{user.user_matric}/profile_photo.jpg"
+
+            try:
+                s3_object = s3_client.get_object(Bucket="ave-base-bucket", Key=s3_key)
+                source_bytes = s3_object["Body"].read()
+
+                similarity_threshold = 80
+                compare_faces_response = rekognition_client.compare_faces(
+                    TargetImage={"Bytes": reference_image.Bytes},
+                    SourceImage={"Bytes": source_bytes},
+                    SimilarityThreshold=similarity_threshold,
+                )
+            except Exception as e:
+                logger.error(f"Error verifying face: {e}")
+                raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                                    detail="Facial verification failed")
+
+            formated_compare_faces_response: CompareFacesResponse = CompareFacesResponse.model_validate(
+                compare_faces_response
+            )
+            if not formated_compare_faces_response.FaceMatches:
+                raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Facial verification failed")
+
+            if len(formated_compare_faces_response.FaceMatches) > 1:
+                raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
+                                    detail="Too many faces in the captured video feed. Try again")
+
+            logger.debug(f"Similarity threshold for user: {user.user_matric} - {formated_compare_faces_response.FaceMatches[0].Similarity}")
+
+            if formated_compare_faces_response.FaceMatches[0].Similarity < similarity_threshold:
+                raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Facial verification failed")
+
+
             geofence = await self.geofence_repo.get_geofence_by_id(
                 geofence_id=attendance.geofence_id, conn=self.conn
             )
+
             if not geofence:
                 raise HTTPException(
                     status_code=status.HTTP_404_NOT_FOUND,
-                    detail=f"Invalid fence code",
+                    detail=f"Geofence does not exist",
                 )
 
             if not geofence.fence_code == attendance.fence_code:

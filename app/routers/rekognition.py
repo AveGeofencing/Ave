@@ -20,13 +20,13 @@ async def create_session(_: Annotated[UserOutputModel, Depends(get_current_user)
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@router.get("/get-results/{session_id}")
-async def get_results(
-        session_id: str,
-        user: Annotated[UserOutputModel, Depends(get_current_user)],
-        user_service: Annotated[UserService, Depends()]
-):
-    return await user_service.compare_and_verify_face(
-        user=user,
-        session_id=session_id
-    )
+# @router.get("/get-results/{session_id}")
+# async def get_results(
+#         session_id: str,
+#         user: Annotated[UserOutputModel, Depends(get_current_user)],
+#         user_service: Annotated[UserService, Depends()]
+# ):
+#     return await user_service.compare_and_verify_face(
+#         user=user,
+#         session_id=session_id
+#     )
