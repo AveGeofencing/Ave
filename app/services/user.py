@@ -69,7 +69,6 @@ class UserService:
                 user_email=email,
             )
 
-            print(f"Verification token: {registration_token}")
             verification_link = f"{settings.BASE_URL}/verify?token={registration_token}"
             self.bg_tasks.add_task(
                 send_email_task,
@@ -93,17 +92,7 @@ class UserService:
                 email=unverified_user_data.get("email")
             )
 
-            print(f"Signup session token: {signup_session_token}")
-            max_cookie_age = 15
-            set_custom_cookie(
-                response=response,
-                key="signup_session_token",
-                path="/",
-                value=signup_session_token,
-                max_age=max_cookie_age * SECONDS_IN_1_MINUTE
-            )
-
-        return
+        return {"signup_session_token": signup_session_token}
 
 
     async def _is_valid_photo_file(self, file: UploadFile):
@@ -174,8 +163,6 @@ class UserService:
         return s3_key
 
     async def create_new_user(self, user: UserCreateModel, photo_upload: UploadFile, token: str, response: Response) -> dict:
-
-        print(f"Received session token in create_user: {token}")
         if not token:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid verification link.")
 

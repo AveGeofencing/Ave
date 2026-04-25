@@ -33,7 +33,12 @@ async def create_user(
         user: UserCreateModel = Depends(user_create_form),
         photo_ref_upload: UploadFile = File(...)):
 
-    signup_session_token = request.cookies.get("signup_session_token")
+    auth_header = request.headers.get("Authorization", "")
+    signup_session_token = (
+        auth_header.replace("Bearer ", "") if auth_header
+        else request.cookies.get("signup_session_token")
+    )
+
     return await user_service.create_new_user(
         response=response,
         user=user,
