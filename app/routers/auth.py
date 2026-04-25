@@ -22,8 +22,8 @@ async def register_user(email: str, user_service: Annotated[UserService, Depends
     return await user_service.register_user(email=email)
 
 @router.post("/verify-email")
-async def verify_token(response: Response, token: str, user_service: Annotated[UserService, Depends()]):
-    return await user_service.verify_token(verification_token=token, response=response)
+async def verify_token(token: str, user_service: Annotated[UserService, Depends()]):
+    return await user_service.verify_token(verification_token=token)
 
 @router.post("/create-user", status_code=status.HTTP_201_CREATED,)
 async def create_user(
