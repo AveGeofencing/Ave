@@ -93,6 +93,7 @@ class UserService:
                 email=unverified_user_data.get("email")
             )
 
+            print(f"Signup session token: {signup_session_token}")
             max_cookie_age = 15
             set_custom_cookie(
                 response=response,
@@ -173,6 +174,8 @@ class UserService:
         return s3_key
 
     async def create_new_user(self, user: UserCreateModel, photo_upload: UploadFile, token: str, response: Response) -> dict:
+
+        print(f"Received session token in create_user: {token}")
         if not token:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid verification link.")
 
