@@ -22,8 +22,8 @@ async def register_user(email: str, user_service: Annotated[UserService, Depends
     return await user_service.register_user(email=email)
 
 @router.post("/verify-email")
-async def verify_token(response: Response, token: str, user_service: Annotated[UserService, Depends()]):
-    return await user_service.verify_token(verification_token=token, response=response)
+async def verify_token(token: str, user_service: Annotated[UserService, Depends()]):
+    return await user_service.verify_token(verification_token=token)
 
 @router.post("/create-user", status_code=status.HTTP_201_CREATED,)
 async def create_user(
@@ -33,7 +33,12 @@ async def create_user(
         user: UserCreateModel = Depends(user_create_form),
         photo_ref_upload: UploadFile = File(...)):
 
-    signup_session_token = request.cookies.get("signup_session_token")
+    auth_header = request.headers.get("Authorization", "")
+    signup_session_token = (
+        auth_header.replace("Bearer ", "") if auth_header
+        else request.cookies.get("signup_session_token")
+    )
+
     return await user_service.create_new_user(
         response=response,
         user=user,
