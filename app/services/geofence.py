@@ -219,9 +219,9 @@ class GeofenceService:
 
             logger.debug(f"Confidence in user liveness: {formatted_liveness_response.Confidence}")
 
-            liveness_threshold = 80
+            liveness_threshold = 70
             if formatted_liveness_response.Confidence < liveness_threshold:
-                raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Not a real user in the video feed. Try again")
+                raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="There might not be a real user in the video feed. Try again")
 
 
             reference_image = formatted_liveness_response.ReferenceImage
