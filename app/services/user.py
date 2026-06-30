@@ -78,7 +78,7 @@ class UserService:
                 recipients=[email],
             )
 
-            return {"message": "Verification link send to your email address."}
+        return {"message": "Verification link send to your email address."}
 
     async def verify_token(self, verification_token: str):
         async with self.conn.begin():

@@ -8,7 +8,6 @@ class Settings(BaseSettings):
     SECRET_KEY: str
     ALGORITHM: str
     ECHO_SQL: bool = False
-    WANT_SINGLE_SIGNIN: bool
     BASE_URL: str
     COOKIE_DOMAIN: str
 
