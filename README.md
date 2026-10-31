@@ -95,29 +95,13 @@ docker compose up -d pg_db
 
 The database is exposed on host port `5431`.
 
-Create a `.env` file in the project root:
+Create a `.env` file from the template and fill in your local values:
 
-```env
-DATABASE_URL=postgresql+asyncpg://admin:password@localhost:5431/geofencedb
-ALEMBIC_DATABASE_URL=postgresql+psycopg://admin:password@localhost:5431/geofencedb
-
-SECRET_KEY=replace-with-a-long-random-secret
-ALGORITHM=HS256
-ECHO_SQL=false
-WANT_SINGLE_SIGNIN=false
-BASE_URL=http://localhost:3000
-COOKIE_DOMAIN=localhost
-
-MAIL_USERNAME=your-smtp-username
-MAIL_PASSWORD=your-smtp-password
-MAIL_FROM=no-reply@example.com
-MAIL_PORT=587
-MAIL_SERVER=smtp.example.com
-MAIL_STARTTLS=true
-MAIL_SSL_TLS=false
-USE_CREDENTIALS=true
-VALIDATE_CERTS=true
+```bash
+cp .env.example .env
 ```
+
+The template includes database, JWT, cookie, CORS, AWS, S3, photo-size, and SMTP settings.
 
 Apply migrations and start the API:
 
@@ -134,12 +118,11 @@ uv run uvicorn app.main:app --reload
 
 The code uses the default `boto3` credential chain, so configure credentials through environment variables, a shared AWS profile, or an IAM role.
 
-The current implementation targets:
+Configure Rekognition and S3 with:
 
-- Rekognition in `us-east-1`.
-- S3 bucket `ave-base-bucket` in `eu-west-2`.
-
-Those values are defined in `app/services/user.py` and `app/services/geofence.py`. Change them for your own AWS account and deployment.
+- `AWS_REGION`: Rekognition region.
+- `S3_REGION`: S3 bucket region.
+- `S3_BUCKET`: bucket containing student reference photos.
 
 ### Docker
 
@@ -147,9 +130,16 @@ Those values are defined in `app/services/user.py` and `app/services/geofence.py
 docker compose up --build
 ```
 
-The Compose stack runs the API on `http://localhost:8000` and PostgreSQL on host port `5431`.
+The Compose stack runs the API on `http://localhost:8000` and PostgreSQL on host port `5431`. The API waits for PostgreSQL to become healthy and includes a container healthcheck against `/health`.
 
-The Dockerfile currently uses a Python 3.12 base image while `pyproject.toml` requires Python 3.13. Update the base image to `python:3.13` before building the container.
+### Testing and linting
+
+```bash
+uv run ruff check app tests
+uv run pytest --cov=app --cov-report=term-missing
+```
+
+CI runs linting, tests with coverage, and a Docker image build.
 
 ### Environment variables
 
@@ -162,7 +152,15 @@ The Dockerfile currently uses a Python 3.12 base image while `pyproject.toml` re
 | `ECHO_SQL` | Logs SQL statements when enabled |
 | `WANT_SINGLE_SIGNIN` | Single-session policy flag |
 | `BASE_URL` | Frontend base URL used in verification and reset links |
-| `COOKIE_DOMAIN` | Domain applied to refresh-token cookies |
+| `COOKIE_DOMAIN` | Optional domain applied to auth cookies |
+| `COOKIE_SECURE` | Restricts auth cookies to HTTPS |
+| `COOKIE_SAMESITE` | `lax`, `strict`, or `none` |
+| `CORS_ORIGINS` | Comma-separated allowed frontend origins |
+| `PASSWORD_MIN_LENGTH` | Minimum password length |
+| `MAX_PHOTO_BYTES` | Maximum uploaded profile-photo size |
+| `AWS_REGION` | AWS Rekognition region |
+| `S3_REGION` | S3 bucket region |
+| `S3_BUCKET` | S3 bucket for reference photos |
 | `MAIL_USERNAME` | SMTP account username |
 | `MAIL_PASSWORD` | SMTP account password |
 | `MAIL_FROM` | Sender email address |
@@ -188,7 +186,7 @@ The Dockerfile currently uses a Python 3.12 base image while `pyproject.toml` re
 1. The student logs in and receives an access token.
 2. The client calls `POST /rekognition/create-session` and completes the AWS Face Liveness flow.
 3. The client posts `geofence_id`, `lat`, `long`, `fence_code`, and `liveness_session_id` to `POST /geofence/record-attendance`.
-4. The API verifies liveness, compares faces, checks the fence code and radius, and stores the attendance record.
+4. The API validates the fence code, time window, duplicate attendance, and location radius, then verifies liveness and compares faces before storing the attendance record.
 
 ## Data model
 

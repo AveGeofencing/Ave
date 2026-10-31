@@ -1,11 +1,11 @@
 from datetime import datetime
+
 from sqlalchemy import (
     DateTime,
     ForeignKey,
-    Integer,
     String,
 )
-from sqlalchemy.orm import mapped_column, Mapped, relationship
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from ..common import generate_id
 from ..database import Base

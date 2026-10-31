@@ -1,9 +1,9 @@
 from abc import ABC
 from datetime import UTC, datetime, timedelta
 from enum import StrEnum
-from uuid import uuid4, UUID
+from uuid import UUID, uuid4
 
-from jwt import PyJWTError, decode, encode, InvalidSignatureError, ExpiredSignatureError
+from jwt import ExpiredSignatureError, InvalidSignatureError, PyJWTError, decode, encode
 from sqlalchemy import Delete, delete, exists, select
 from sqlalchemy.ext.asyncio import AsyncSession
 

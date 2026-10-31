@@ -1,38 +1,42 @@
-from typing import Annotated, Optional, Dict, Any, Sequence, List
+from io import BytesIO
+from typing import Annotated, Any, Dict, List, Optional, Sequence
 
 import boto3
-import magic
+from fastapi import BackgroundTasks, Depends, HTTPException, UploadFile
+from PIL import Image, UnidentifiedImageError
 from sqlalchemy.exc import IntegrityError
-from fastapi import BackgroundTasks, HTTPException, Depends, UploadFile
-from starlette import status
 from sqlalchemy.ext.asyncio import AsyncSession
+from starlette import status
 from starlette.requests import Request
 from starlette.responses import Response
 
-from ..common import hash_password, generate_id, is_password_correct, set_custom_cookie
+from ..common import generate_id, hash_password, is_password_correct, set_custom_cookie
 from ..database import get_db_session
-from ..email.types import WelcomeUserEmail, PasswordResetConfirmation
-from ..email.types.no_reply import UserVerificationEmail, PasswordResetEmail
-from ..exceptions import InvalidTokenError
-from ..infra.token_utils import AccountVerificationToken, PasswordResetToken, AccessToken, RefreshToken, \
-    SignupSessionToken
-from ..models import User, College
 from ..email import send_email_task
-from ..repositories import UserRepository, UsedPasswordResetTokenRepo
+from ..email.types import PasswordResetConfirmation, WelcomeUserEmail
+from ..email.types.no_reply import PasswordResetEmail, UserVerificationEmail
+from ..exceptions import InvalidTokenError
+from ..infra.token_utils import (
+    AccessToken,
+    AccountVerificationToken,
+    PasswordResetToken,
+    RefreshToken,
+    SignupSessionToken,
+)
+from ..models import College, User
+from ..repositories import UsedPasswordResetTokenRepo, UserRepository
 from ..schemas import UserCreateModel, UserOutputModel
 from ..schemas.college import CollegeSchema
-from ..schemas.rekognition import DetectFacesResponse, CompareFacesResponse
-from ..utils import (
-    PASSWORD_MIN_LENGTH, logger,
-)
+from ..schemas.rekognition import DetectFacesResponse
 from ..settings import APP_SETTINGS
+from ..utils import logger
 
 settings = APP_SETTINGS
 
 SECONDS_IN_1_MINUTE = 60
 
-rekognition_client = boto3.client("rekognition", region_name="us-east-1")
-s3_client = boto3.client("s3", region_name="eu-west-2")
+rekognition_client = boto3.client("rekognition", region_name=settings.AWS_REGION)
+s3_client = boto3.client("s3", region_name=settings.S3_REGION)
 
 class UserService:
     def __init__(
@@ -69,7 +73,6 @@ class UserService:
                 user_email=email,
             )
 
-            print(f"Verification token: {registration_token}")
             verification_link = f"{settings.BASE_URL}/verify?token={registration_token}"
             self.bg_tasks.add_task(
                 send_email_task,
@@ -105,25 +108,37 @@ class UserService:
         return
 
 
-    async def _is_valid_photo_file(self, file: UploadFile):
-        header = await file.read(2048)  # read first 2KB
-        await file.seek(0)  # reset
-
-        mime = magic.from_buffer(header, mime=True)
-        if mime not in ["image/jpeg", "image/png"]:
-            return False
-
-        return True
-
     async def _verify_photo_quality(self, file: UploadFile):
-        if not await self._is_valid_photo_file(file):
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="File provided is not an image.")
-
         image_bytes = await file.read()
         await file.seek(0)
 
+        if not image_bytes:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="File provided is empty.",
+            )
+
+        if len(image_bytes) > settings.MAX_PHOTO_BYTES:
+            raise HTTPException(
+                status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE,
+                detail=f"Photo must be smaller than {settings.MAX_PHOTO_BYTES // (1024 * 1024)} MB.",
+            )
+
         try:
-            """Detect faces in an image using Amazon Rekognition."""
+            with Image.open(BytesIO(image_bytes)) as image:
+                if image.format not in {"JPEG", "PNG"}:
+                    raise HTTPException(
+                        status_code=status.HTTP_400_BAD_REQUEST,
+                        detail="File provided is not a JPEG or PNG image.",
+                    )
+                image.verify()
+        except (UnidentifiedImageError, OSError):
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="File provided is not a valid image.",
+            )
+
+        try:
             response: dict = rekognition_client.detect_faces(
                 Image={"Bytes": image_bytes},
                 Attributes=["ALL"],
@@ -165,7 +180,7 @@ class UserService:
         await photo_upload.seek(0)
 
         s3_client.put_object(
-            Bucket="ave-base-bucket",
+            Bucket=settings.S3_BUCKET,
             Key=s3_key,
             Body=await photo_upload.read(),
             ContentType=photo_upload.content_type,
@@ -190,6 +205,7 @@ class UserService:
 
         user.email = user_email
         user.user_id = user_id
+        user.role = "student"
         user.password = hash_password(user.password)
 
         # verify photo quality with s3
@@ -274,15 +290,15 @@ class UserService:
         filtered_attendances = [
             attendance
             for attendance in user.attendances
-            if attendance.course_title == course_title
+            if attendance.geofence_name == course_title
         ]
         return {"attendance": filtered_attendances}
 
     async def send_reset_password_email(
             self, user_email: str
     ) -> Dict[str, str]:
-        async with self.conn.begin() as conn:
-            """Send password reset email to user"""
+        """Send password reset email to user"""
+        async with self.conn.begin():
             user: User = await self.user_repository.get_user_by_email_or_matric(email=user_email, conn=self.conn)
             if user is None:
                 # Return success even if user doesn't exist for security reasons
@@ -310,8 +326,14 @@ class UserService:
             self, new_password: str, token: str,
     ) -> Dict[str, str]:
         """Change user password using reset token"""
+        if not new_password or len(new_password) < settings.PASSWORD_MIN_LENGTH:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"Password must be at least {settings.PASSWORD_MIN_LENGTH} characters",
+            )
+
         async with self.conn.begin():
-            #Check database for existence of reset token
+            # Check database for existence of reset token
             token_is_used = await self.used_reset_token_repo.get_used_token(token_value=token, conn=self.conn)
             if token_is_used:
                 raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Expired link.")
@@ -320,17 +342,16 @@ class UserService:
             # Add reset token to database
             await self.used_reset_token_repo.add_reset_token(token_value=token, conn=self.conn)
 
-            if not new_password or len(new_password) < PASSWORD_MIN_LENGTH:
-                raise HTTPException(
-                    status_code=400,
-                    detail=f"Password must be at least {PASSWORD_MIN_LENGTH} characters",
-                )
-
             # Hash and update password
             new_hashed_password = hash_password(new_password)
             user_email = await self.user_repository.change_user_password(
                 user_id=user_id, new_hashed_password=new_hashed_password, conn=self.conn
             )
+            if not user_email:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="Invalid reset token.",
+                )
 
             self.bg_tasks.add_task(
                 send_email_task,
@@ -354,13 +375,10 @@ class UserService:
             existing_user: User = await self.user_repository.get_user_by_email_or_matric(
                 email=email, matric=user_matric, conn=self.conn
             )
-            if not existing_user:
+            if not existing_user or not is_password_correct(existing_user.hashed_password, password):
                 raise HTTPException(
-                    status_code=status.HTTP_404_NOT_FOUND, detail="User not found. Please sign up"
-                )
-            if not is_password_correct(existing_user.hashed_password, password):
-                raise HTTPException(
-                    status_code=status.HTTP_401_UNAUTHORIZED, detail="Incorrect username or password"
+                    status_code=status.HTTP_401_UNAUTHORIZED,
+                    detail="Incorrect username or password",
                 )
 
             user_to_login: UserOutputModel = UserOutputModel(

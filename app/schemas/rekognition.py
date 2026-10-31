@@ -1,5 +1,6 @@
+from typing import Dict, List, Literal, Optional
+
 from pydantic import BaseModel
-from typing import List, Dict, Optional
 
 
 class BoundingBoxModel(BaseModel):
@@ -113,9 +114,6 @@ class CompareFacesResponse(BaseModel):
     UnmatchedFaces: List[FaceModel]  # can be empty
     ResponseMetadata: ResponseMetadataModel
 
-from pydantic import BaseModel
-from typing import Literal
-
 
 class S3ObjectModel(BaseModel):
     Bucket: str
@@ -138,5 +136,5 @@ class FaceLivenessSessionResult(BaseModel):
     Status: Literal["CREATED", "IN_PROGRESS", "SUCCEEDED", "FAILED", "EXPIRED"]
     Confidence: float | None = None
     ReferenceImage: ReferenceImageModel | None = None
-    AuditImages: list[ReferenceImage] | None = None
+    AuditImages: list[ReferenceImageModel] | None = None
     Challenge: ChallengeModel | None = None

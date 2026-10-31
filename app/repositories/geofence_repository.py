@@ -2,14 +2,14 @@ from datetime import datetime
 from typing import Annotated
 from zoneinfo import ZoneInfo
 
-from ..database import get_db_session
-from ..models import Geofence, AttendanceRecord
-from ..schemas import AttendanceRecordModel, GeofenceCreateModel
-
 from fastapi import Depends
-from sqlalchemy import and_, func, select, update
-from sqlalchemy.orm import selectinload
+from sqlalchemy import and_, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import selectinload
+
+from ..database import get_db_session
+from ..models import AttendanceRecord, Geofence
+from ..schemas import AttendanceRecordModel, GeofenceCreateModel
 
 DATABASE_DEPENDENCY = Annotated[AsyncSession, Depends(get_db_session)]
 

@@ -1,10 +1,9 @@
-from typing import Annotated, Optional
-from fastapi import APIRouter
+from typing import Annotated
+
+from fastapi import APIRouter, Depends
 
 from ..schemas import UserOutputModel
 from ..services import UserService
-from fastapi import Depends
-
 from ..utils.security_dependencies import authenticate_student_user
 
 student_router = APIRouter(prefix="/user/student", tags=["Users/Student"])
