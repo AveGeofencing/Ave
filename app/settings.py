@@ -8,6 +8,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 class Settings(BaseSettings):
     DATABASE_URL: str
     ALEMBIC_DATABASE_URL: str | None = None
+    ALEMBIC_ONLINE_DATABASE_URL: str | None = None
     SECRET_KEY: str
     ALGORITHM: Literal["HS256", "HS384", "HS512"] = "HS256"
     ECHO_SQL: bool = False
