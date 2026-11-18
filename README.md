@@ -106,9 +106,19 @@ The template includes database, JWT, cookie, CORS, AWS, S3, photo-size, and SMTP
 Apply migrations and start the API:
 
 ```bash
+# Local database (default)
 uv run alembic upgrade head
+
+# Select online database URL through an Alembic -x parameter
+uv run alembic -x database=online upgrade head
+
+# Alternatively pass a database URL directly
+uv run alembic -x database_url="postgresql+psycopg://user:password@host:5432/dbname" upgrade head
+
 uv run uvicorn app.main:app --reload
 ```
+
+Set `ALEMBIC_MODE=online` to use `ALEMBIC_ONLINE_DATABASE_URL`. Omit it or set it to `local` to use `ALEMBIC_DATABASE_URL`.
 
 - API: `http://127.0.0.1:8000`
 - Interactive docs: `http://127.0.0.1:8000/docs`
