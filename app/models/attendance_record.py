@@ -16,10 +16,10 @@ class AttendanceRecord(Base):
 
     id: Mapped[str] = mapped_column(String, primary_key=True, default=generate_id)
     user_matric: Mapped[str] = mapped_column(
-        String(50), ForeignKey("users.user_matric")
+        String(50), ForeignKey("users.user_matric", ondelete="CASCADE", onupdate="CASCADE")
     )
     fence_code: Mapped[str] = mapped_column(
-        String(15), ForeignKey("geofences.fence_code")
+        String(15), ForeignKey("geofences.fence_code", ondelete="CASCADE", onupdate="CASCADE")
     )
     geofence_name: Mapped[str] = mapped_column(String(60))
     timestamp: Mapped[datetime] = mapped_column(DateTime(timezone=True))

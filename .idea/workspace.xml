@@ -4,44 +4,38 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0bc21ee9-1675-45ab-a3bd-2a6be0259344" name="Changes" comment="refactor: edit email content">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/routers/rekognition.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/routers/rekognition.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/schemas/rekognition.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/schemas/rekognition.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/services/user.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/services/user.py" afterDir="false" />
+    <list default="true" id="42961bf3-1c67-4c1a-9eba-8b5fe6ab687e" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/alembic/env.py" beforeDir="false" afterPath="$PROJECT_DIR$/alembic/env.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/settings.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docker-compose.yml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pyproject.toml" beforeDir="false" afterPath="$PROJECT_DIR$/pyproject.toml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/uv.lock" beforeDir="false" afterPath="$PROJECT_DIR$/uv.lock" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
-  <component name="FileTemplateManagerImpl">
-    <option name="RECENT_TEMPLATES">
-      <list>
-        <option value="Python Script" />
-      </list>
-    </option>
-  </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="ProjectColorInfo">{
-  &quot;customColor&quot;: &quot;&quot;,
-  &quot;associatedIndex&quot;: 0
-}</component>
-  <component name="ProjectId" id="3C8k4y0xkRdfCH8iGwU2EaMjLWt" />
+  <component name="ProjectColorInfo"><![CDATA[{
+  "associatedIndex": 4
+}]]></component>
+  <component name="ProjectId" id="3FophBqZOG1X6GARTzIdTNBEmSi" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;dev&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "git-widget-placeholder": "main",
+    "last_opened_file_path": "C:/Work/Personal/Ave/ave_backend"
   }
-}</component>
+}]]></component>
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
@@ -51,154 +45,12 @@
   </component>
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
-      <changelist id="0bc21ee9-1675-45ab-a3bd-2a6be0259344" name="Changes" comment="" />
-      <created>1775774398440</created>
+      <changelist id="42961bf3-1c67-4c1a-9eba-8b5fe6ab687e" name="Changes" comment="" />
+      <created>1782751392408</created>
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
-      <updated>1775774398440</updated>
+      <updated>1782751392408</updated>
     </task>
-    <task id="LOCAL-00001" summary="Remove foreign key from refresh_tokens table&#10;&#10;This migration drops the foreign key constraint `refresh_tokens_user_id_fkey` on the `refresh_tokens` table. The downgrade step restores the constraint with `CASCADE` rules for updates and deletes.">
-      <option name="closed" value="true" />
-      <created>1775817902788</created>
-      <option name="number" value="00001" />
-      <option name="presentableId" value="LOCAL-00001" />
-      <option name="project" value="LOCAL" />
-      <updated>1775817902789</updated>
-    </task>
-    <task id="LOCAL-00002" summary="Refactor user management and enhance authentication flows&#10;&#10;Replaced deprecated database fetch methods and refined user creation logic. Added login and logout functionality with token handling, streamlined email verification, and improved password reset flow. This update ensures better modularity, security, and maintainability.">
-      <option name="closed" value="true" />
-      <created>1775817928253</created>
-      <option name="number" value="00002" />
-      <option name="presentableId" value="LOCAL-00002" />
-      <option name="project" value="LOCAL" />
-      <updated>1775817928253</updated>
-    </task>
-    <task id="LOCAL-00003" summary="Clean up workspace.xml change list comments&#10;&#10;Removed verbose and unnecessary comments from the `.idea/workspace.xml` file to streamline the project configuration. This helps reduce clutter and focus on essential settings.">
-      <option name="closed" value="true" />
-      <created>1775994857411</created>
-      <option name="number" value="00003" />
-      <option name="presentableId" value="LOCAL-00003" />
-      <option name="project" value="LOCAL" />
-      <updated>1775994857411</updated>
-    </task>
-    <task id="LOCAL-00004" summary="Remove `env.yaml` and update `.gitignore`&#10;&#10;Deleted `env.yaml` containing sensitive information and added it to `.gitignore` to prevent accidental inclusion in the repository. This improves security and aligns with best practices for handling environment variables.">
-      <option name="closed" value="true" />
-      <created>1775994890088</created>
-      <option name="number" value="00004" />
-      <option name="presentableId" value="LOCAL-00004" />
-      <option name="project" value="LOCAL" />
-      <updated>1775994890088</updated>
-    </task>
-    <task id="LOCAL-00005" summary="Add `python-magic` dependency to project&#10;&#10;`python-magic` has been added to the dependency files `uv.lock` and `pyproject.toml` with version `0.4.27`. This ensures the required library is available for handling file type magic numbers.">
-      <option name="closed" value="true" />
-      <created>1776908960037</created>
-      <option name="number" value="00005" />
-      <option name="presentableId" value="LOCAL-00005" />
-      <option name="project" value="LOCAL" />
-      <updated>1776908960037</updated>
-    </task>
-    <task id="LOCAL-00006" summary="Add Rekognition integration and photo quality checks for users&#10;&#10;Implemented AWS Rekognition-based face detection and photo quality validation in user registration. Added S3 integration to upload profile images and updated the user creation workflow to handle image processing and storage. Adjusted schemas and repositories to accommodate these changes.">
-      <option name="closed" value="true" />
-      <created>1776909014520</created>
-      <option name="number" value="00006" />
-      <option name="presentableId" value="LOCAL-00006" />
-      <option name="project" value="LOCAL" />
-      <updated>1776909014520</updated>
-    </task>
-    <task id="LOCAL-00007" summary="Add file upload support to user creation endpoint&#10;&#10;Updated the `/create-user` endpoint to accept a file upload alongside user data. Introduced a `photo_ref_upload` parameter and modified dependencies to include structured form data for user creation.">
-      <option name="closed" value="true" />
-      <created>1776909020663</created>
-      <option name="number" value="00007" />
-      <option name="presentableId" value="LOCAL-00007" />
-      <option name="project" value="LOCAL" />
-      <updated>1776909020663</updated>
-    </task>
-    <task id="LOCAL-00008" summary="refector: delete useless SessionRepository">
-      <option name="closed" value="true" />
-      <created>1776941194450</created>
-      <option name="number" value="00008" />
-      <option name="presentableId" value="LOCAL-00008" />
-      <option name="project" value="LOCAL" />
-      <updated>1776941194450</updated>
-    </task>
-    <task id="LOCAL-00009" summary="refector: delete useless SessionRepository">
-      <option name="closed" value="true" />
-      <created>1776941210643</created>
-      <option name="number" value="00009" />
-      <option name="presentableId" value="LOCAL-00009" />
-      <option name="project" value="LOCAL" />
-      <updated>1776941210643</updated>
-    </task>
-    <task id="LOCAL-00010" summary="feat: link college and department models using relationships">
-      <option name="closed" value="true" />
-      <created>1776941238070</created>
-      <option name="number" value="00010" />
-      <option name="presentableId" value="LOCAL-00010" />
-      <option name="project" value="LOCAL" />
-      <updated>1776941238070</updated>
-    </task>
-    <task id="LOCAL-00011" summary="feat: validation schemas for college and departments">
-      <option name="closed" value="true" />
-      <created>1776941255847</created>
-      <option name="number" value="00011" />
-      <option name="presentableId" value="LOCAL-00011" />
-      <option name="project" value="LOCAL" />
-      <updated>1776941255847</updated>
-    </task>
-    <task id="LOCAL-00012" summary="feat: add router, service and repo functions for getting list of colleges">
-      <option name="closed" value="true" />
-      <created>1776941290800</created>
-      <option name="number" value="00012" />
-      <option name="presentableId" value="LOCAL-00012" />
-      <option name="project" value="LOCAL" />
-      <updated>1776941290800</updated>
-    </task>
-    <task id="LOCAL-00013" summary="new directories">
-      <option name="closed" value="true" />
-      <created>1776941302773</created>
-      <option name="number" value="00013" />
-      <option name="presentableId" value="LOCAL-00013" />
-      <option name="project" value="LOCAL" />
-      <updated>1776941302773</updated>
-    </task>
-    <task id="LOCAL-00014" summary="refactor: edit email content">
-      <option name="closed" value="true" />
-      <created>1776945223140</created>
-      <option name="number" value="00014" />
-      <option name="presentableId" value="LOCAL-00014" />
-      <option name="project" value="LOCAL" />
-      <updated>1776945223140</updated>
-    </task>
-    <option name="localTasksCounter" value="15" />
     <servers />
-  </component>
-  <component name="Vcs.Log.Tabs.Properties">
-    <option name="TAB_STATES">
-      <map>
-        <entry key="MAIN">
-          <value>
-            <State />
-          </value>
-        </entry>
-      </map>
-    </option>
-  </component>
-  <component name="VcsManagerConfiguration">
-    <MESSAGE value="migra" />
-    <MESSAGE value="Remove foreign key from refresh_tokens table&#10;&#10;This migration drops the foreign key constraint `refresh_tokens_user_id_fkey` on the `refresh_tokens` table. The downgrade step restores the constraint with `CASCADE` rules for updates and deletes." />
-    <MESSAGE value="Refactor user management and enhance authentication flows&#10;&#10;Replaced deprecated database fetch methods and refined user creation logic. Added login and logout functionality with token handling, streamlined email verification, and improved password reset flow. This update ensures better modularity, security, and maintainability." />
-    <MESSAGE value="Clean up workspace.xml change list comments&#10;&#10;Removed verbose and unnecessary comments from the `.idea/workspace.xml` file to streamline the project configuration. This helps reduce clutter and focus on essential settings." />
-    <MESSAGE value="Remove `env.yaml` and update `.gitignore`&#10;&#10;Deleted `env.yaml` containing sensitive information and added it to `.gitignore` to prevent accidental inclusion in the repository. This improves security and aligns with best practices for handling environment variables" />
-    <MESSAGE value="Add Rekognition API routes for liveness detection&#10;&#10;Introduced routes to create liveness detection sessions and retrieve results using AWS Rekognition. Included logic to store the reference image from the session results." />
-    <MESSAGE value="Add `python-magic` dependency to project&#10;&#10;`python-magic` has been added to the dependency files `uv.lock` and `pyproject.toml` with version `0.4.27`. This ensures the required library is available for handling file type magic numbers." />
-    <MESSAGE value="Add Rekognition integration and photo quality checks for users&#10;&#10;Implemented AWS Rekognition-based face detection and photo quality validation in user registration. Added S3 integration to upload profile images and updated the user creation workflow to handle image processing and storage. Adjusted schemas and repositories to accommodate these changes." />
-    <MESSAGE value="Add file upload support to user creation endpoint&#10;&#10;Updated the `/create-user` endpoint to accept a file upload alongside user data. Introduced a `photo_ref_upload` parameter and modified dependencies to include structured form data for user creation." />
-    <MESSAGE value="refector: delete useless SessionRepository" />
-    <MESSAGE value="feat: link college and department models using relationships" />
-    <MESSAGE value="feat: validation schemas for college and departments" />
-    <MESSAGE value="feat: add router, service and repo functions for getting list of colleges" />
-    <MESSAGE value="new directories" />
-    <MESSAGE value="refactor: edit email content" />
-    <option name="LAST_COMMIT_MESSAGE" value="refactor: edit email content" />
   </component>
 </project>

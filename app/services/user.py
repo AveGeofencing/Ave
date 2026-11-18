@@ -28,6 +28,7 @@ from ..repositories import UsedPasswordResetTokenRepo, UserRepository
 from ..schemas import UserCreateModel, UserOutputModel
 from ..schemas.college import CollegeSchema
 from ..schemas.rekognition import DetectFacesResponse
+from ..utils import logger
 from ..settings import APP_SETTINGS
 from ..utils import logger
 
@@ -82,13 +83,14 @@ class UserService:
                 recipients=[email],
             )
 
-            return {"message": "Verification link send to your email address."}
+        return {"message": "Verification link send to your email address."}
 
-    async def verify_token(self, verification_token: str, response: Response):
+    async def verify_token(self, verification_token: str):
         async with self.conn.begin():
             try:
                 unverified_user_data: dict = await AccountVerificationToken.decode(verification_token, conn=self.conn)
-            except InvalidTokenError:
+            except InvalidTokenError as e:
+                logger.error(f"Error with token: {str(e)}")
                 raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Link expired.")
 
             signup_session_token: str = await SignupSessionToken.new(
@@ -96,21 +98,23 @@ class UserService:
                 email=unverified_user_data.get("email")
             )
 
-            max_cookie_age = 15
-            set_custom_cookie(
-                response=response,
-                key="signup_session_token",
-                path="/",
-                value=signup_session_token,
-                max_age=max_cookie_age * SECONDS_IN_1_MINUTE
-            )
+        return {"signup_session_token": signup_session_token}
 
-        return
 
+    @staticmethod
+    async def _is_valid_photo_file(image_bytes: bytes):
+        mime = magic.from_buffer(image_bytes, mime=True)
+        if mime not in ["image/jpeg", "image/png"]:
+            return False
+
+        return True
 
     async def _verify_photo_quality(self, file: UploadFile):
-        image_bytes = await file.read()
         await file.seek(0)
+        image_bytes = await file.read()
+
+        if not await self._is_valid_photo_file(image_bytes):
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="File provided is not an image. What are we even doing here?")
 
         if not image_bytes:
             raise HTTPException(
@@ -153,7 +157,7 @@ class UserService:
             )
 
         if formatted_response.FaceDetails is None or formatted_response.FaceDetails == []:
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="No faces detected in the image.")
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="No faces detected in the image. Nice try though.")
 
         if len(formatted_response.FaceDetails) > 1:
             raise HTTPException(
@@ -161,28 +165,42 @@ class UserService:
                 detail="Multiple faces detected in the image. Only register one face per user."
             )
 
-        if quality := formatted_response.FaceDetails[0].Quality:
+        valid_detected_face = formatted_response.FaceDetails[0]
+
+        if quality:= valid_detected_face.Quality:
             if quality.Brightness is not None and quality.Brightness < 50:
                 raise HTTPException(
                     status_code=status.HTTP_400_BAD_REQUEST,
-                    detail="Image is too dark. Try a different image."
+                    detail="Image is too dark. Please take the picture in brighter lighting."
                 )
             if quality.Sharpness is not None and quality.Sharpness < 50:
                 raise HTTPException(
                     status_code=status.HTTP_400_BAD_REQUEST,
-                    detail="Image is too blurry. Try a different image."
+                    detail="Image is too blurry. Please try again."
                 )
+
+        if valid_detected_face.FaceOccluded.Value: raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Face is obstructed. Try a different image."
+        )
+
+        if not valid_detected_face.EyesOpen.Value: raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Try opening your eyes before submitting your profile picture, will ya' ?."
+        )
 
         return
 
-    async def _upload_file_to_s3(self, user: UserCreateModel, photo_upload: UploadFile):
+    @staticmethod
+    async def _upload_file_to_s3(user: UserCreateModel, photo_upload: UploadFile):
         s3_key = f"base_user_reference_photos/users/{user.user_matric}/profile_photo.jpg"
         await photo_upload.seek(0)
+        image = await photo_upload.read()
 
         s3_client.put_object(
             Bucket=settings.S3_BUCKET,
             Key=s3_key,
-            Body=await photo_upload.read(),
+            Body=image,
             ContentType=photo_upload.content_type,
         )
         return s3_key
@@ -377,8 +395,11 @@ class UserService:
             )
             if not existing_user or not is_password_correct(existing_user.hashed_password, password):
                 raise HTTPException(
-                    status_code=status.HTTP_401_UNAUTHORIZED,
-                    detail="Incorrect username or password",
+                    status_code=status.HTTP_404_NOT_FOUND, detail="Ave doesn't seem to recognize your email or matric number. Introduce yourself to me by signing up."
+                )
+            if not is_password_correct(existing_user.hashed_password, password):
+                raise HTTPException(
+                    status_code=status.HTTP_401_UNAUTHORIZED, detail="The username and password combination don't match."
                 )
 
             user_to_login: UserOutputModel = UserOutputModel(

@@ -89,7 +89,7 @@ def get_database_url() -> str:
 
     return url
 
-
+print(f"Found Alembic URL: {settings.ALEMBIC_DATABASE_URL}")
 def run_migrations_offline() -> None:
     """Run migrations in 'offline' mode.
 
