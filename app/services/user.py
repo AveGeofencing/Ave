@@ -39,13 +39,14 @@ SECONDS_IN_1_MINUTE = 60
 rekognition_client = boto3.client("rekognition", region_name=settings.AWS_REGION)
 s3_client = boto3.client("s3", region_name=settings.S3_REGION)
 
+
 class UserService:
     def __init__(
-            self,
-            user_repository: Annotated[UserRepository, Depends()],
-            used_reset_token_repo: Annotated[UsedPasswordResetTokenRepo, Depends()],
-            conn: Annotated[AsyncSession, Depends(get_db_session)],
-            bg_tasks: BackgroundTasks,
+        self,
+        user_repository: Annotated[UserRepository, Depends()],
+        used_reset_token_repo: Annotated[UsedPasswordResetTokenRepo, Depends()],
+        conn: Annotated[AsyncSession, Depends(get_db_session)],
+        bg_tasks: BackgroundTasks,
     ):
         self.conn = conn  # Database connection
 
@@ -62,10 +63,16 @@ class UserService:
         Returns:
         """
         async with self.conn.begin():
-            existing_user: User = await self.user_repository.get_user_by_email_or_matric(conn=self.conn, email=email)
+            existing_user: User | None = (
+                await self.user_repository.get_user_by_email_or_matric(
+                    conn=self.conn, email=email
+                )
+            )
             if existing_user:
-                raise HTTPException(status_code=status.HTTP_409_CONFLICT,
-                                    detail="Ave already knows this email. Wanna try logging in instead?")
+                raise HTTPException(
+                    status_code=status.HTTP_409_CONFLICT,
+                    detail="Ave already knows this email. Wanna try logging in instead?",
+                )
 
             user_id: str = generate_id()
             registration_token = await AccountVerificationToken.new(
@@ -88,18 +95,21 @@ class UserService:
     async def verify_token(self, verification_token: str):
         async with self.conn.begin():
             try:
-                unverified_user_data: dict = await AccountVerificationToken.decode(verification_token, conn=self.conn)
+                unverified_user_data: dict = await AccountVerificationToken.decode(
+                    verification_token, conn=self.conn
+                )
             except InvalidTokenError as e:
                 logger.error(f"Error with token: {str(e)}")
-                raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Link expired.")
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST, detail="Link expired."
+                )
 
             signup_session_token: str = await SignupSessionToken.new(
                 user_id=unverified_user_data.get("user_id"),
-                email=unverified_user_data.get("email")
+                email=unverified_user_data.get("email"),
             )
 
         return {"signup_session_token": signup_session_token}
-
 
     @staticmethod
     async def _is_valid_photo_file(image_bytes: bytes):
@@ -114,7 +124,10 @@ class UserService:
         image_bytes = await file.read()
 
         if not await self._is_valid_photo_file(image_bytes):
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="File provided is not an image. What are we even doing here?")
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="File provided is not an image. What are we even doing here?",
+            )
 
         if not image_bytes:
             raise HTTPException(
@@ -148,52 +161,64 @@ class UserService:
                 Attributes=["ALL"],
             )
 
-            formatted_response: DetectFacesResponse = DetectFacesResponse.model_validate(response)
+            formatted_response: DetectFacesResponse = (
+                DetectFacesResponse.model_validate(response)
+            )
         except Exception as e:
             logger.error(f"Error verifying photo quality: {e}")
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail="Error verifying photo quality."
+                detail="Error verifying photo quality.",
             )
 
-        if formatted_response.FaceDetails is None or formatted_response.FaceDetails == []:
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="No faces detected in the image. Nice try though.")
+        if (
+            formatted_response.FaceDetails is None
+            or formatted_response.FaceDetails == []
+        ):
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="No faces detected in the image. Nice try though.",
+            )
 
         if len(formatted_response.FaceDetails) > 1:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Multiple faces detected in the image. Only register one face per user."
+                detail="Multiple faces detected in the image. Only register one face per user.",
             )
 
         valid_detected_face = formatted_response.FaceDetails[0]
 
-        if quality:= valid_detected_face.Quality:
+        if quality := valid_detected_face.Quality:
             if quality.Brightness is not None and quality.Brightness < 50:
                 raise HTTPException(
                     status_code=status.HTTP_400_BAD_REQUEST,
-                    detail="Image is too dark. Please take the picture in brighter lighting."
+                    detail="Image is too dark. Please take the picture in brighter lighting.",
                 )
             if quality.Sharpness is not None and quality.Sharpness < 50:
                 raise HTTPException(
                     status_code=status.HTTP_400_BAD_REQUEST,
-                    detail="Image is too blurry. Please try again."
+                    detail="Image is too blurry. Please try again.",
                 )
 
-        if valid_detected_face.FaceOccluded.Value: raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Face is obstructed. Try a different image."
-        )
+        if valid_detected_face.FaceOccluded.Value:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Face is obstructed. Try a different image.",
+            )
 
-        if not valid_detected_face.EyesOpen.Value: raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Try opening your eyes before submitting your profile picture, will ya' ?."
-        )
+        if not valid_detected_face.EyesOpen.Value:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Try opening your eyes before submitting your profile picture, will ya' ?.",
+            )
 
         return
 
     @staticmethod
     async def _upload_file_to_s3(user: UserCreateModel, photo_upload: UploadFile):
-        s3_key = f"base_user_reference_photos/users/{user.user_matric}/profile_photo.jpg"
+        s3_key = (
+            f"base_user_reference_photos/users/{user.user_matric}/profile_photo.jpg"
+        )
         await photo_upload.seek(0)
         image = await photo_upload.read()
 
@@ -205,21 +230,36 @@ class UserService:
         )
         return s3_key
 
-    async def create_new_user(self, user: UserCreateModel, photo_upload: UploadFile, token: str, response: Response) -> dict:
+    async def create_new_user(
+        self,
+        user: UserCreateModel,
+        photo_upload: UploadFile,
+        token: str,
+        response: Response,
+    ) -> dict:
         if not token:
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid verification link.")
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Invalid verification link.",
+            )
 
         """Create a new user account, create verification code, send verification code"""
         try:
             user_details: dict = await SignupSessionToken.decode(token)
         except InvalidTokenError:
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid verification link.")
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Invalid verification link.",
+            )
 
         user_id: str | None = user_details.get("user_id", None)
         user_email: str | None = user_details.get("email", None)
 
         if not all([user_id, user_email]):
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Corrupted verification link")
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Corrupted verification link",
+            )
 
         user.email = user_email
         user.user_id = user_id
@@ -234,7 +274,8 @@ class UserService:
             logger.error(f"Error uploading photo to S3: {e}")
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail="Error uploading photo.")
+                detail="Error uploading photo.",
+            )
 
         # Database transaction
         async with self.conn.begin():
@@ -247,7 +288,7 @@ class UserService:
                 logger.error(f"Error creating user: {e}")
                 raise HTTPException(
                     status_code=status.HTTP_409_CONFLICT,
-                    detail="Ave already knows a user with this email or matric number. Wanna try logging in instead?"
+                    detail="Ave already knows a user with this email or matric number. Wanna try logging in instead?",
                 )
 
             response.delete_cookie(key="signup_session_token")
@@ -259,27 +300,28 @@ class UserService:
                 email_context=WelcomeUserEmail(
                     context_vars={"dashboard_link": dashboard_link}
                 ),
-                recipients=[created_user.email]
+                recipients=[created_user.email],
             )
-
 
             return {"message": "User created successfully"}
 
     async def get_user_by_email_or_matric(
-            self, email: str = None, matric: str = None
+        self, email: str | None = None, matric: str | None = None
     ) -> Dict[str, Any]:
         """Retrieve user information by email or matric number"""
         if not email and not matric:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Email or matric number must be provided"
+                detail="Email or matric number must be provided",
             )
 
-        user = await self.user_repository.get_user_by_email_or_matric(conn=self.conn, email=email, matric=matric)
+        user = await self.user_repository.get_user_by_email_or_matric(
+            conn=self.conn, email=email, matric=matric
+        )
         if user is None:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
-                detail=f"User with email {email} or matric {matric} not found"
+                detail=f"User with email {email} or matric {matric} not found",
             )
 
         return {
@@ -291,15 +333,17 @@ class UserService:
         }
 
     async def get_user_records(
-            self, user_matric: str, course_title: Optional[str] = None
+        self, user_matric: str, course_title: Optional[str] = None
     ) -> Dict[str, Any]:
         """Retrieve user attendance records, optionally filtered by course"""
-        user: User = await self.user_repository.get_user_by_email_or_matric(matric=user_matric, conn=self.conn)
+        user: User | None = await self.user_repository.get_user_by_email_or_matric(
+            matric=user_matric, conn=self.conn
+        )
 
         if not user:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
-                detail=f"User with matric {user_matric} not found"
+                detail=f"User with matric {user_matric} not found",
             )
 
         if course_title is None:
@@ -312,12 +356,12 @@ class UserService:
         ]
         return {"attendance": filtered_attendances}
 
-    async def send_reset_password_email(
-            self, user_email: str
-    ) -> Dict[str, str]:
+    async def send_reset_password_email(self, user_email: str) -> Dict[str, str]:
         """Send password reset email to user"""
         async with self.conn.begin():
-            user: User = await self.user_repository.get_user_by_email_or_matric(email=user_email, conn=self.conn)
+            user: User | None = await self.user_repository.get_user_by_email_or_matric(
+                email=user_email, conn=self.conn
+            )
             if user is None:
                 # Return success even if user doesn't exist for security reasons
                 return {
@@ -333,7 +377,9 @@ class UserService:
             self.bg_tasks.add_task(
                 send_email_task,
                 recipients=[user.email],
-                email_context=PasswordResetEmail(context_vars={"reset_link": reset_link, "link_expiry_time": 10}),
+                email_context=PasswordResetEmail(
+                    context_vars={"reset_link": reset_link, "link_expiry_time": 10}
+                ),
             )
 
             return {
@@ -341,7 +387,9 @@ class UserService:
             }
 
     async def change_password(
-            self, new_password: str, token: str,
+        self,
+        new_password: str,
+        token: str,
     ) -> Dict[str, str]:
         """Change user password using reset token"""
         if not new_password or len(new_password) < settings.PASSWORD_MIN_LENGTH:
@@ -352,13 +400,19 @@ class UserService:
 
         async with self.conn.begin():
             # Check database for existence of reset token
-            token_is_used = await self.used_reset_token_repo.get_used_token(token_value=token, conn=self.conn)
+            token_is_used = await self.used_reset_token_repo.get_used_token(
+                token_value=token, conn=self.conn
+            )
             if token_is_used:
-                raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Expired link.")
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST, detail="Expired link."
+                )
 
             user_id: str = await PasswordResetToken.decode(token, conn=self.conn)
             # Add reset token to database
-            await self.used_reset_token_repo.add_reset_token(token_value=token, conn=self.conn)
+            await self.used_reset_token_repo.add_reset_token(
+                token_value=token, conn=self.conn
+            )
 
             # Hash and update password
             new_hashed_password = hash_password(new_password)
@@ -376,12 +430,14 @@ class UserService:
                 recipients=[user_email],
                 email_context=PasswordResetConfirmation(
                     context_vars={"username": user_email}
-                )
+                ),
             )
 
             return {"message": "Password changed successfully"}
 
-    async def login(self, email: str, user_matric: str, password: str, response: Response):
+    async def login(
+        self, email: str, user_matric: str, password: str, response: Response
+    ):
         """Handles the login process for a user.
 
         It checks if the user exists in the database and verifies the password.
@@ -390,16 +446,22 @@ class UserService:
         and returns the session token.
         """
         async with self.conn.begin():
-            existing_user: User = await self.user_repository.get_user_by_email_or_matric(
-                email=email, matric=user_matric, conn=self.conn
+            existing_user: User | None = (
+                await self.user_repository.get_user_by_email_or_matric(
+                    email=email, matric=user_matric, conn=self.conn
+                )
             )
-            if not existing_user or not is_password_correct(existing_user.hashed_password, password):
+            if not existing_user or not is_password_correct(
+                existing_user.hashed_password, password
+            ):
                 raise HTTPException(
-                    status_code=status.HTTP_404_NOT_FOUND, detail="Ave doesn't seem to recognize your email or matric number. Introduce yourself to me by signing up."
+                    status_code=status.HTTP_404_NOT_FOUND,
+                    detail="Ave doesn't seem to recognize your email or matric number. Introduce yourself to me by signing up.",
                 )
             if not is_password_correct(existing_user.hashed_password, password):
                 raise HTTPException(
-                    status_code=status.HTTP_401_UNAUTHORIZED, detail="The username and password combination don't match."
+                    status_code=status.HTTP_401_UNAUTHORIZED,
+                    detail="The username and password combination don't match.",
                 )
 
             user_to_login: UserOutputModel = UserOutputModel(
@@ -433,7 +495,7 @@ class UserService:
 
     async def logout(self, request: Request, response: Response):
         async with self.conn.begin():
-            refresh_token: str = request.cookies.get("refresh_token")
+            refresh_token: str | None = request.cookies.get("refresh_token")
             if not refresh_token:
                 logger.debug("No refresh token was found in the user's client.")
                 return {"message": "Logged out successfully."}
@@ -466,24 +528,25 @@ class UserService:
                 logger.debug("No refresh token was found in the user's client.")
                 raise HTTPException(
                     status_code=status.HTTP_401_UNAUTHORIZED,
-                    detail="No refresh token provided"
+                    detail="No refresh token provided",
                 )
 
             try:
                 # Decode the refresh token to get the user ID
                 user_id: str = await RefreshToken.decode(
-                    conn=self.conn,
-                    token=refresh_token
+                    conn=self.conn, token=refresh_token
                 )
             except InvalidTokenError:
                 logger.debug("Invalid refresh token")
                 raise HTTPException(
                     status_code=status.HTTP_401_UNAUTHORIZED,
-                    detail="Invalid or expired refresh token"
+                    detail="Invalid or expired refresh token",
                 )
 
             # Retrieve the user from the database
-            existing_user: User = await self.user_repository.get_user_by_id(conn=self.conn, user_id=user_id)
+            existing_user: User | None = await self.user_repository.get_user_by_id(
+                conn=self.conn, user_id=user_id
+            )
             if not existing_user:
                 raise HTTPException(
                     status_code=status.HTTP_404_NOT_FOUND, detail="User not found"
@@ -519,9 +582,10 @@ class UserService:
             }
 
     async def get_college_list(self):
-        colleges: Sequence[College] = await self.user_repository.get_list_of_colleges(
-            conn=self.conn
-        )
+        colleges = await self.user_repository.get_list_of_colleges(conn=self.conn)
 
-        formatted_colleges: List[CollegeSchema] = [CollegeSchema.model_validate(college, from_attributes=True) for college in colleges]
+        formatted_colleges: List[CollegeSchema] = [
+            CollegeSchema.model_validate(college, from_attributes=True)
+            for college in colleges
+        ]
         return formatted_colleges

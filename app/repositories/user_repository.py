@@ -11,7 +11,9 @@ from ..utils import logger
 
 class UserRepository:
     @classmethod
-    async def create_new_user(cls, user: UserCreateModel, bucket_image_key: str, conn: AsyncSession):
+    async def create_new_user(
+        cls, user: UserCreateModel, bucket_image_key: str, conn: AsyncSession
+    ):
         new_user: User = User(
             id=user.user_id,
             email=user.email,
@@ -20,7 +22,7 @@ class UserRepository:
             username=user.username,
             hashed_password=user.password,
             department_id=user.department_id,
-            bucket_image_key=bucket_image_key
+            bucket_image_key=bucket_image_key,
         )
 
         conn.add(new_user)
@@ -37,8 +39,11 @@ class UserRepository:
 
     @classmethod
     async def get_user_by_email_or_matric(
-        cls, conn: AsyncSession, email: str | EmailStr = None, matric: str = None,
-    ) -> User:
+        cls,
+        conn: AsyncSession,
+        email: str | EmailStr | None = None,
+        matric: str | None = None,
+    ) -> User | None:
         stmt = (
             select(User)
             .options(selectinload(User.attendances))
@@ -46,13 +51,20 @@ class UserRepository:
         )
         result = await conn.execute(stmt)
 
-        user: User = result.scalar_one_or_none()
+        user: User | None = result.scalar_one_or_none()
 
         return user
 
     @classmethod
-    async def change_user_password(cls, user_id: str, new_hashed_password: str, conn: AsyncSession):
-        stmt = update(User).where(User.id == user_id).values(hashed_password=new_hashed_password).returning(User.email)
+    async def change_user_password(
+        cls, user_id: str, new_hashed_password: str, conn: AsyncSession
+    ):
+        stmt = (
+            update(User)
+            .where(User.id == user_id)
+            .values(hashed_password=new_hashed_password)
+            .returning(User.email)
+        )
         result = await conn.execute(stmt)
         row = result.scalar()
         logger.debug(f"Password changed for user {row}")
