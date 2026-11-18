@@ -289,3 +289,10 @@ DEBUG:     [2026-04-12 12:28:30]  [KJ-LOGGER] [token_utils.py:106] - Token revok
 DEBUG:     [2026-04-12 12:28:30]  [KJ-LOGGER] [user.py:300] - No refresh token was found in the user's client.
 DEBUG:     [2026-04-12 12:28:30]  [KJ-LOGGER] [user.py:300] - No refresh token was found in the user's client.
 DEBUG:     [2026-04-12 12:28:38]  [KJ-LOGGER] [token_utils.py:90] - Token created in database
+ERROR:     [2026-11-18 20:46:42]  [KJ-LOGGER] [email_sender.py:91] - Error occurred while sending email to user: Exception raised Error connecting to smtp.example.com on port 587: [Errno 11001] getaddrinfo failed, check your credentials or email service configuration
+INFO:     [2026-11-18 20:50:05]  [KJ-LOGGER] [email_sender.py:34] - Successfully sent email to ['courageadedara@gmail.com']
+ERROR:     [2026-11-18 20:53:19]  [KJ-LOGGER] [user.py:216] - Error uploading photo to S3: Could not connect to the endpoint URL: "https://ave-base-bucket.s3.eu-west-2.amazonaws.com/base_user_reference_photos/users/2021/10097/profile_photo.jpg"
+ERROR:     [2026-11-18 20:53:34]  [KJ-LOGGER] [user.py:216] - Error uploading photo to S3: Could not connect to the endpoint URL: "https://ave-base-bucket.s3.eu-west-2.amazonaws.com/base_user_reference_photos/users/2021/10097/profile_photo.jpg"
+ERROR:     [2026-11-18 20:55:22]  [KJ-LOGGER] [user.py:216] - Error uploading photo to S3: Could not connect to the endpoint URL: "https://ave-base-bucket.s3.eu-west-2.amazonaws.com/base_user_reference_photos/users/2021/10097/profile_photo.jpg"
+ERROR:     [2026-11-18 20:56:56]  [KJ-LOGGER] [user.py:216] - Error uploading photo to S3: Could not connect to the endpoint URL: "https://ave-base-bucket.s3.eu-west-2.amazonaws.com/base_user_reference_photos/users/2021/10097/profile_photo.jpg"
+ERROR:     [2026-11-18 21:00:14]  [KJ-LOGGER] [user.py:216] - Error uploading photo to S3: Could not connect to the endpoint URL: "https://ave-base-bucket.s3.eu-west-2.amazonaws.com/base_user_reference_photos/users/2021/10097/profile_photo.jpg"

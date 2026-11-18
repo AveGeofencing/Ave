@@ -55,7 +55,7 @@ class EmailSettings(BaseSettings):
     )
 
 
-EMAIL_SETTINGS = EmailSettings()
+EMAIL_SETTINGS = EmailSettings() # type: ignore
 
 email_config = ConnectionConfig(
     MAIL_USERNAME=EMAIL_SETTINGS.MAIL_USERNAME,
@@ -69,4 +69,4 @@ email_config = ConnectionConfig(
     VALIDATE_CERTS=EMAIL_SETTINGS.VALIDATE_CERTS,
 )
 
-APP_SETTINGS = Settings()
+APP_SETTINGS = Settings() # type: ignore
