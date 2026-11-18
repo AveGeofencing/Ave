@@ -17,7 +17,9 @@ class Settings(BaseSettings):
     COOKIE_DOMAIN: str | None = None
     COOKIE_SECURE: bool = True
     COOKIE_SAMESITE: Literal["lax", "strict", "none"] = "none"
-    CORS_ORIGINS: str = "http://localhost:3000,https://ave-frontend-service.onrender.com"
+    CORS_ORIGINS: str = (
+        "http://localhost:3000,https://ave-frontend-service.onrender.com"
+    )
     PASSWORD_MIN_LENGTH: int = 8
     MAX_PHOTO_BYTES: int = 5 * 1024 * 1024
     AWS_REGION: str = "us-east-1"
@@ -31,7 +33,9 @@ class Settings(BaseSettings):
 
     @property
     def cors_origin_list(self) -> list[str]:
-        return [origin.strip() for origin in self.CORS_ORIGINS.split(",") if origin.strip()]
+        return [
+            origin.strip() for origin in self.CORS_ORIGINS.split(",") if origin.strip()
+        ]
 
 
 class EmailSettings(BaseSettings):
