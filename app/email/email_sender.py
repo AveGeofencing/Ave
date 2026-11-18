@@ -1,10 +1,11 @@
 from fastapi import HTTPException
-from fastapi_mail import MessageSchema, MessageType, FastMail, ConnectionConfig
+from fastapi_mail import ConnectionConfig, FastMail, MessageSchema, MessageType
 from jinja2 import Environment, FileSystemLoader
 
-from .types import BaseEmail
 from app.settings import email_config
 from app.utils import logger
+
+from .types import BaseEmail
 
 """This maps the EmailType to the appopriate ConnectionConfig for the email sender."""
 

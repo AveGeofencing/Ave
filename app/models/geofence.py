@@ -1,11 +1,12 @@
 from datetime import datetime
+from typing import TYPE_CHECKING
 from zoneinfo import ZoneInfo
-from sqlalchemy import TIMESTAMP, ForeignKey, Integer, String, Float, DateTime, func
-from sqlalchemy.orm import relationship, Mapped, mapped_column
+
+from sqlalchemy import TIMESTAMP, DateTime, Float, ForeignKey, String
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from ..common import generate_id
 from ..database import Base
-from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from .attendance_record import AttendanceRecord
@@ -23,8 +24,8 @@ class Geofence(Base):
     start_time: Mapped[datetime] = mapped_column(DateTime(timezone=True))
     end_time: Mapped[datetime] = mapped_column(DateTime(timezone=True))
     status: Mapped[str] = mapped_column(String(60))
-    time_created: Mapped[TIMESTAMP] = mapped_column(
-        TIMESTAMP(timezone=True), default=datetime.now(tz=ZoneInfo("UTC"))
+    time_created: Mapped[datetime] = mapped_column(
+        TIMESTAMP(timezone=True), default=lambda: datetime.now(tz=ZoneInfo("UTC"))
     )
     creator_matric: Mapped[str] = mapped_column(
         String(50), ForeignKey("users.user_matric")

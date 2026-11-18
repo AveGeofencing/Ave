@@ -1,42 +1,35 @@
-from fastapi import HTTPException
+from typing import Literal
+
 from fastapi.params import Form
-from pydantic import BaseModel, ConfigDict, EmailStr, field_validator
-from starlette import status
+from pydantic import BaseModel, ConfigDict, EmailStr, Field
 
 
 class UserCreateModel(BaseModel):
-    user_id: str | None
-    email: str | None
-    username: str
-    user_matric: str
-    password: str
-    role: str
-    department_id: int
+    user_id: str | None = None
+    email: EmailStr | None = None
+    username: str = Field(min_length=1, max_length=60)
+    user_matric: str = Field(min_length=1, max_length=50)
+    password: str = Field(min_length=8, max_length=128)
+    role: Literal["student"] = "student"
+    department_id: int = Field(gt=0)
     model_config = ConfigDict(from_attributes=True)
-
-    @field_validator("password")
-    @classmethod
-    def check_password_length(cls, v):
-        if len(v) < 8:
-            raise ValueError("Password must be at least 8 characters.")
-        return v
 
 
 class UserOutputModel(BaseModel):
     user_id: str
-    email: str
+    email: EmailStr
     username: str
     user_matric: str
     role: str
 
     model_config = ConfigDict(from_attributes=True)
 
+
 def user_create_form(
-        username: str = Form(...),
-        user_matric: str = Form(...),
-        password: str = Form(...),
-        role: str = Form(...),
-        department_id: int = Form(...)
+    username: str = Form(...),
+    user_matric: str = Form(...),
+    password: str = Form(...),
+    department_id: int = Form(...),
 ) -> UserCreateModel:
     return UserCreateModel(
         email=None,
@@ -44,6 +37,5 @@ def user_create_form(
         username=username,
         user_matric=user_matric,
         password=password,
-        role=role,
         department_id=department_id,
     )

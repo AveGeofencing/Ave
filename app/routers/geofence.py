@@ -1,14 +1,19 @@
-from datetime import datetime
-from typing import Annotated, Dict, List
+from typing import Annotated, List
+
 from fastapi import APIRouter, Depends
 
-from ..schemas import GeofenceCreateModel, AttendanceRecordModel, AttendanceRecordOut, UserOutputModel
+from ..schemas import (
+    AttendanceRecordModel,
+    AttendanceRecordOut,
+    GeofenceCreateModel,
+    UserOutputModel,
+)
+from ..services import GeofenceService
 from ..utils.security_dependencies import (
     authenticate_admin_user,
     authenticate_student_user,
     get_current_user,
 )
-from ..services import GeofenceService
 
 authenticate_admin = Annotated[UserOutputModel, Depends(authenticate_admin_user)]
 authenticate_student = Annotated[UserOutputModel, Depends(authenticate_student_user)]

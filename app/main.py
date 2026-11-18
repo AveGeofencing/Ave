@@ -1,77 +1,67 @@
-import time
-from fastapi import FastAPI, Request
-from fastapi.middleware.cors import CORSMiddleware
 import logging
+import time
 
 import uvicorn
+from fastapi import FastAPI, Request
+from fastapi.middleware.cors import CORSMiddleware
 from starlette.responses import JSONResponse
 
-from .routers import auth_router
-from .routers import general_user_router
-from .routers import geofence_router
+from .routers import auth_router, general_user_router, geofence_router
 from .routers.rekognition import router as rekognition_router
+from .settings import APP_SETTINGS
 
-logger=logging.getLogger("uvicorn")
+logger = logging.getLogger("uvicorn")
 
 app = FastAPI(
     title="Ave Geofencing",
     description="A smart solution for student attendance",
     version="1.0.1",
-    contact={
-        "name": "Adedara Adeloro",
-        "email": "courageadedara@gmail.com"
-    }
+    contact={"name": "Adedara Adeloro", "email": "courageadedara@gmail.com"},
 )
+
 
 @app.middleware("http")
 async def measure_response_time(request: Request, call_next):
-    start_time = time.perf_counter()  # Start timer
-    response = await call_next(request)  # Process request
-    end_time = time.perf_counter()  # End timer
-    duration = (end_time - start_time) * 1000  # Convert to milliseconds
-    logger.info(f"Request: {request.method} {request.url.path} ~ {duration:.2f} ms")
+    start_time = time.perf_counter()
+    response = await call_next(request)
+    duration = (time.perf_counter() - start_time) * 1000
+    logger.info("Request: %s %s ~ %.2f ms", request.method, request.url.path, duration)
     return response
 
+
+@app.exception_handler(ValueError)
+async def value_error_handler(_: Request, exc: ValueError):
+    logger.error("Value error: %s", exc)
+    return JSONResponse(status_code=422, content={"detail": str(exc)})
+
+
 @app.exception_handler(Exception)
-async def custom_exception_handler(_: Request, exc: Exception):
-    logger.error(f"{str(exc)}")
+async def unhandled_exception_handler(_: Request, exc: Exception):
+    logger.error("Unhandled exception: %s", exc, exc_info=True)
     return JSONResponse(
         status_code=500,
         content={"detail": "An error occurred. Check server"},
     )
 
-@app.exception_handler(ValueError)
-async def custom_exception_handler(_: Request, exc: Exception):
-    logger.error(f"{str(exc)}")
-    return JSONResponse(
-        status_code=422,
-        content={"detail": str(exc)},
-    )
-
-
-
-origins = [
-    "http://localhost:3000",
-    "https://ave-frontend-service.onrender.com",
-    "http://172.20.10.3:3000"
-]
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins=APP_SETTINGS.cors_origin_list,
     allow_credentials=True,
-    allow_methods=["GET", "POST", "PUT", "DELETE"],
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allow_headers=["*"],
 )
 
+
+@app.get("/health", tags=["Health"])
+async def health():
+    return {"status": "ok", "service": "ave-api", "version": app.version}
 
 
 app.include_router(general_user_router)
 app.include_router(auth_router)
 app.include_router(geofence_router)
 app.include_router(rekognition_router)
-# app.include_router(admin_router)
-# # app.include_router(student_router)
 
 if __name__ == "__main__":
     uvicorn.run(__name__ + ":app", host="0.0.0.0", port=8000, reload=True)

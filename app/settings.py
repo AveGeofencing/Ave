@@ -1,20 +1,37 @@
-from pydantic_settings import BaseSettings, SettingsConfigDict
-from pydantic import EmailStr, SecretStr
+from typing import Literal
+
 from fastapi_mail import ConnectionConfig
+from pydantic import EmailStr, SecretStr
+from pydantic_settings import BaseSettings, SettingsConfigDict
+
 
 class Settings(BaseSettings):
     DATABASE_URL: str
     ALEMBIC_DATABASE_URL: str | None = None
+    ALEMBIC_ONLINE_DATABASE_URL: str | None = None
     SECRET_KEY: str
-    ALGORITHM: str
+    ALGORITHM: Literal["HS256", "HS384", "HS512"] = "HS256"
     ECHO_SQL: bool = False
-    BASE_URL: str
-    COOKIE_DOMAIN: str
+    WANT_SINGLE_SIGNIN: bool = False
+    BASE_URL: str = "http://localhost:3000"
+    COOKIE_DOMAIN: str | None = None
+    COOKIE_SECURE: bool = True
+    COOKIE_SAMESITE: Literal["lax", "strict", "none"] = "none"
+    CORS_ORIGINS: str = "http://localhost:3000,https://ave-frontend-service.onrender.com"
+    PASSWORD_MIN_LENGTH: int = 8
+    MAX_PHOTO_BYTES: int = 5 * 1024 * 1024
+    AWS_REGION: str = "us-east-1"
+    S3_REGION: str = "eu-west-2"
+    S3_BUCKET: str = "ave-base-bucket"
 
     model_config = SettingsConfigDict(
         env_file=".env",
         extra="ignore",
     )
+
+    @property
+    def cors_origin_list(self) -> list[str]:
+        return [origin.strip() for origin in self.CORS_ORIGINS.split(",") if origin.strip()]
 
 
 class EmailSettings(BaseSettings):
@@ -29,8 +46,10 @@ class EmailSettings(BaseSettings):
     VALIDATE_CERTS: bool
 
     model_config = SettingsConfigDict(
-        env_file=".env", extra="ignore",
+        env_file=".env",
+        extra="ignore",
     )
+
 
 EMAIL_SETTINGS = EmailSettings()
 

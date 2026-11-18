@@ -1,5 +1,5 @@
 from abc import ABC
-from enum import StrEnum
+
 from pydantic import BaseModel
 
 

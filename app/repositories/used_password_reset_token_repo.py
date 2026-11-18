@@ -1,7 +1,8 @@
-from ..models.used_password_reset_tokens import UsedPasswordResetToken
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from sqlalchemy import select
+from ..models.used_password_reset_tokens import UsedPasswordResetToken
+
 
 class UsedPasswordResetTokenRepo:
 

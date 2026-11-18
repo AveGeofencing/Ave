@@ -1,7 +1,9 @@
+from sqlalchemy import String
+from sqlalchemy.orm import Mapped, mapped_column
+
 from ..common import generate_id
 from ..database import Base
-from sqlalchemy.orm import Mapped, mapped_column
-from sqlalchemy import String
+
 
 class UsedPasswordResetToken(Base):
     __tablename__ = "used_password_reset_tokens"

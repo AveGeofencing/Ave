@@ -1,13 +1,11 @@
-from typing import Annotated
-from fastapi import Depends
+from pydantic import EmailStr
+from sqlalchemy import or_, update
+from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from sqlalchemy.orm import selectinload
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import or_, update
-from pydantic import EmailStr
 
+from ..models import College, User
 from ..schemas.user import UserCreateModel
-from ..models import User, College
 from ..utils import logger
 
 

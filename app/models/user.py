@@ -1,8 +1,9 @@
-from sqlalchemy import Boolean, String, ForeignKey
-from sqlalchemy.orm import relationship, Mapped, mapped_column
+from sqlalchemy import ForeignKey, String
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from ..common import generate_id
 from ..database import Base
+
 
 class User(Base):
     __tablename__ = "users"

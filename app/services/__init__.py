@@ -1,2 +1,2 @@
-from .user import UserService
 from .geofence import GeofenceService
+from .user import UserService

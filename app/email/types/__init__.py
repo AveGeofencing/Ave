@@ -1,10 +1,10 @@
+from .base import BaseEmail
 from .no_reply import (
-    WelcomeUserEmail,
-    UserVerificationEmail,
     PasswordResetConfirmation,
     PasswordResetEmail,
+    UserVerificationEmail,
+    WelcomeUserEmail,
 )
-from .base import BaseEmail
 
 __all__ = [
     "WelcomeUserEmail",
